@@ -13,7 +13,7 @@ class effectAction {
 public:
 	effectAction(std::string name): mName(name){};
 
-	void performAction(weissPlayer& self, weissPlayer& opponent) {
+	virtual void performAction(weissPlayer& self, weissPlayer& opponent) {
 	};
 
 

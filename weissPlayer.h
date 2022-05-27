@@ -9,6 +9,7 @@ class weissPlayer {
 public:
 	
 	weissPlayer(weissDeck deckState); //Minimal Ctor
+	weissPlayer(weissDeck deckState, weissDeck waitingRoomState); //Minimal Ctor
 
 	weissPlayer(weissDeck deckState,
 		weissDeck waitingRoomState, 
@@ -25,10 +26,13 @@ public:
 
 	
 	void takeDamage(int amount);
+	bool burnDeck(int damage);
+	void takeRefreshDamage(void);
 	void shuffleDeck(void);
 	void levelUp(void);
 
 private:
+	//Zones
 	weissDeck mPlayerDeck;
 	weissDeck mPlayerStock;
 	weissDeck mPlayerClock;
@@ -36,5 +40,8 @@ private:
 	weissDeck mPlayerMemory;
 	weissDeck mPlayerLevel;
 	weissDeck mPlayerResolution;
+
+	//Refresh flag
+	bool mQueueRefreshDamage=false;
 
 };

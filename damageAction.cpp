@@ -1,6 +1,6 @@
 #include "damageAction.h"
 
-/*damageAction::damageAction(int amount, bool performTrigger, std::vector<std::unique_ptr<effectAction>> preAttackActionSequence, std::vector<std::unique_ptr<effectAction>> onCancelActionSequence, std::vector<std::unique_ptr<effectAction>> postAttackActionSequence)
+damageAction::damageAction(int amount, bool performTrigger, std::vector<std::shared_ptr<effectAction>> preAttackActionSequence, std::vector<std::shared_ptr<effectAction>> onCancelActionSequence, std::vector<std::shared_ptr<effectAction>> postAttackActionSequence)
 	:
 	mAmount(amount),
 	mTrigger(performTrigger),
@@ -8,7 +8,7 @@
 	mOnCancelAction(onCancelActionSequence),
 	mPostAttackAction(postAttackActionSequence)
 {
-}*/
+}
 
 damageAction::damageAction(int amount, bool performTrigger)
 	:

@@ -12,7 +12,6 @@ public:
 
 
 	void shuffle(void);
-	bool takeDamage(int damage, weissDeck& resolution);
 	unsigned getNoOfCards(void);
 
 private:

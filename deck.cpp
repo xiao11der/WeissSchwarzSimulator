@@ -27,20 +27,7 @@ void weissDeck::shuffle(void) {
 	std::random_shuffle(mContent.begin(), mContent.end());
 }
 
-bool weissDeck::takeDamage(int damage, weissDeck& resolution) {
-	card topCard;
 
-	for (int i = 0; i < damage; i++) {
-		topCard = mContent.front();
-		resolution.mContent.push_back(topCard); //Push to resolution zone
-		mContent.pop_front();
-		
-		if (topCard.getType() == "climax") {
-			return false; //damage canacled
-		}
-	}
-	return true;
-}
 
 
 unsigned weissDeck::getNoOfCards(void) {

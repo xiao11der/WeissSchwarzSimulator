@@ -1,9 +1,10 @@
 #include "weissPlayer.h"
 #include "deck.h"
+#include<iostream>
 
 
 
-weissPlayer::weissPlayer(weissDeck deckState) {
+weissPlayer::weissPlayer(weissDeck deckState) { //Ctor with deck only
 	mPlayerDeck = deckState;
 
 	//zero-initialize all other zones
@@ -17,6 +18,23 @@ weissPlayer::weissPlayer(weissDeck deckState) {
 	mPlayerResolution = weissDeck(0, 0); 
 
 }
+
+weissPlayer::weissPlayer(weissDeck deckState, weissDeck waitingRoomState) { //Ctor with deck and waitingroom
+	mPlayerDeck = deckState;
+	mPlayerWaitingRoom = waitingRoomState;
+
+
+	//zero-initialize all other zones
+	mPlayerClock = weissDeck(0, 0);
+	mPlayerStock = weissDeck(0, 0);
+	mPlayerLevel = weissDeck(0, 0);
+	mPlayerMemory = weissDeck(0, 0);
+
+
+	mPlayerResolution = weissDeck(0, 0);
+
+}
+
 
 weissPlayer::weissPlayer(weissDeck deckState, weissDeck waitingRoomState, weissDeck clockState, weissDeck levelState, weissDeck stockState, weissDeck memoryState) //Generic ctor
 {
@@ -58,35 +76,94 @@ void weissPlayer::combine(weissDeck& deckSource, weissDeck& deckDest) {
 }
 
 
-void weissPlayer::takeDamage(int amount) {
+void weissPlayer::takeDamage(int amount) { //Overall damage calculation for cancellable damage
 	
-	if (mPlayerDeck.takeDamage(amount, mPlayerResolution)) {
+	if (burnDeck(amount)) {
 		combine(mPlayerResolution, mPlayerClock);
 		while(mPlayerClock.getNoOfCards() >= 7) { //Level up
 			weissPlayer::levelUp();
 		}
+
+		if (mQueueRefreshDamage) {//Take refresh damage if necessary
+			weissPlayer::takeRefreshDamage();
+		}
 	}
 	else {
 		combine(mPlayerResolution, mPlayerWaitingRoom);
+		if (mQueueRefreshDamage) {//Take refresh damage if necessary
+			weissPlayer::takeRefreshDamage();
+		}
 	}
 
 }
 
+bool weissPlayer::burnDeck(int damage) { //Subfunction to take x cancellable damage from top deck and refresh as necessary
+	card topCard;
+
+	for (int i = 0; i < damage; i++) {
+		topCard = mPlayerDeck.mContent.front();
+		mPlayerResolution.mContent.push_back(topCard); //Push to resolution zone
+		mPlayerDeck.mContent.pop_front();
+
+		if (mPlayerDeck.mContent.size()==0) { //Refresh if deck runs out, queue refresh damage if needed
+			combine(mPlayerWaitingRoom, mPlayerDeck);
+			mPlayerDeck.shuffle();
+			mQueueRefreshDamage=true;
+		}
+
+		
+
+		if (topCard.getType() == "climax") {
+			return false; //damage canacled
+		}
+	}
+	return true;
+}
+
 void weissPlayer::levelUp(void) {
 
-	mPlayerLevel.mContent.push_back(mPlayerClock.mContent.front()); //level first card of clock
-	mPlayerClock.mContent.pop_front();
+	for (auto i = mPlayerClock.mContent.begin(); i <= mPlayerClock.mContent.begin()+6; ++i) { //Iterate the first 7 cards of the clock, find card to level up, level up the first non-cx
+		card topClock = mPlayerClock.mContent.front();
+		if (topClock.getType() != "climax") {
+			mPlayerLevel.mContent.push_back(topClock);
+			mPlayerClock.mContent.pop_front();
+			//std::cout << "found non-cx" << std::endl;
+			break;
+		}
+
+		if (i == mPlayerClock.mContent.begin() + 5) { //If the entire clock is cx, just level a cx
+			mPlayerLevel.mContent.push_back(topClock);
+			mPlayerClock.mContent.pop_front();
+			//std::cout << "all clock is cx" << std::endl;
+		}
+
+		//std::cout << "card cx, moving on to the next" << std::endl;
+	}
+	 //level first card of clock
+	
 	int overFlow = mPlayerClock.getNoOfCards() - 6;
 
-	for (int i = 0; i < overFlow; ++i) { //-6 since we leveled up one card, only 6 is supposed to go to waiting room
+	for (int i = 0; i < overFlow; ++i) { //-6 since we leveled up one card, only 6 is supposed to go to waiting room, dump the overflow to resolution first
 		mPlayerResolution.mContent.push_front(mPlayerClock.mContent.back());
 		mPlayerClock.mContent.pop_back();
 	}
 
 
 
-	combine(mPlayerClock, mPlayerWaitingRoom);
-	combine(mPlayerResolution, mPlayerClock);
+	combine(mPlayerClock, mPlayerWaitingRoom); //Dump clock to waiting room
+	combine(mPlayerResolution, mPlayerClock); //Dump overflow to clock again
+}
+
+void weissPlayer::takeRefreshDamage(void) {
+
+	mPlayerClock.mContent.push_back(mPlayerDeck.mContent.front()); //put top card of deck to clock
+	mPlayerDeck.mContent.pop_front();
+	mQueueRefreshDamage = false;
+
+	while (mPlayerClock.getNoOfCards() >= 7) { //Level up if needed
+		weissPlayer::levelUp();
+	}
+
 }
 
 weissDeck& weissPlayer::getClock(void) {

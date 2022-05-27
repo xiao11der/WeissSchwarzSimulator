@@ -15,11 +15,11 @@ class damageAction {
 
 public:
 	
-	/*damageAction(int amount, bool performTrigger = false,
-		std::vector<std::unique_ptr<effectAction>> preAttackActionSequence= std::vector<std::unique_ptr<effectAction>>(1,std::make_unique<effectAction>("none")),
-		std::vector<std::unique_ptr<effectAction>> onCancelActionSequence = std::vector<std::unique_ptr<effectAction>>(1, std::make_unique<effectAction>("none")),
-		std::vector<std::unique_ptr<effectAction>> postAttackActionSequence = std::vector<std::unique_ptr<effectAction>>(1, std::make_unique<effectAction>("none"))
-	);*/
+	damageAction(int amount, bool performTrigger,
+		std::vector<std::shared_ptr<effectAction>> preAttackActionSequence,
+		std::vector<std::shared_ptr<effectAction>> onCancelActionSequence,
+		std::vector<std::shared_ptr<effectAction>> postAttackActionSequence
+	);
 
 	damageAction(int amount, bool performTrigger = false
 	);
@@ -30,9 +30,9 @@ public:
 private:
 	int mAmount;
 	bool mTrigger;
-	//std::vector<std::unique_ptr<effectAction>> mPreAttackAction;
-	//std::vector<std::unique_ptr<effectAction>> mPostAttackAction;
-	//std::vector<std::unique_ptr<effectAction>> mOnCancelAction;
+	std::vector<std::shared_ptr<effectAction>> mPreAttackAction;
+	std::vector<std::shared_ptr<effectAction>> mPostAttackAction;
+	std::vector<std::shared_ptr<effectAction>> mOnCancelAction;
 
 
 };
