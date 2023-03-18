@@ -81,7 +81,7 @@ int main(void) {
 		std::map<int, int> damageChart; //Initialize damage chart for output
 		std::vector<damageAction>damageSequence(inputAttackSequence.size(), damageAction(0));//
 
-
+		//TO-DO: Add config options class to simulation with options to run arbitrary amount of iterations, and to either run with old or new refresh rules, modify tests accordingly
 		weissSimulation weissTest; //Initialize Simulation
 		weissPlayer selfInit(weissDeck(10, 3));//Initialize self deck state
 		weissPlayer opponentInit(weissDeck(noOfCardsInOppDeck, noOfCxInOppDeck), weissDeck(noOfCardsInOppWR, noOfCxinOppWR)); //Initialize  opponent deck state and WR state
@@ -94,7 +94,12 @@ int main(void) {
 		}
 
 		//Run simulation
-		weissTest.runWeissSimulation(MAX_ITER, damageChart, selfInit, opponentInit, damageSequence);
+		if (weissTest.runWeissSimulation(MAX_ITER, damageChart, selfInit, opponentInit, damageSequence)) {
+
+		}
+		else {
+			throw std::runtime_error(std::string("Unknown error in simulation run stage, simulation has not completed \n"));
+		}
 
 
 

@@ -15,13 +15,13 @@ class damageAction {
 
 public:
 	
-	damageAction(int amount, bool performTrigger,
+	damageAction(int amount, bool performTrigger, //Ctor with all possible attack elements
 		std::vector<std::shared_ptr<effectAction>> preAttackActionSequence,
 		std::vector<std::shared_ptr<effectAction>> onCancelActionSequence,
 		std::vector<std::shared_ptr<effectAction>> postAttackActionSequence
 	);
 
-	damageAction(int amount, bool performTrigger = false
+	damageAction(int amount, bool performTrigger = false //Ctor with just amount and trigger
 	);
 	
 	int performDamageAction(weissPlayer& self, weissPlayer& opponent);
