@@ -8,6 +8,7 @@
 #include<map>
 #include "weissSimulation.h"
 #include "weissPlayer.h"
+#include<stdexcept>
 
 int main(void) {
 
@@ -21,6 +22,7 @@ int main(void) {
 	int tempAttackValue;
 	std::vector<int> inputAttackSequence;
 	
+
 	std::cout << "Enter Number of Cards in Opponent Deck" << std::endl;
 	std::cin >> noOfCardsInOppDeck;
 	
@@ -32,6 +34,33 @@ int main(void) {
 
 	std::cout << "Enter Number of Cx in Opponent Waiting Room" << std::endl;
 	std::cin >> noOfCxinOppWR;
+
+	//Input Error Handling
+	try {
+		if (noOfCardsInOppDeck <0 || noOfCxInOppDeck < 0 || noOfCardsInOppWR<0 || noOfCxinOppWR<0) {
+			throw std::invalid_argument(std::string("Invalid Deck - Card numbers cannot be negative! \n") +
+				std::string("Card in Opp Deck : ") + std::to_string(noOfCardsInOppDeck) + std::string("\n") +
+				std::string("CX in Opp Deck : ") + std::to_string(noOfCxInOppDeck) + std::string("\n") +
+				std::string("Card in Opp WR : ") + std::to_string(noOfCardsInOppWR) + std::string("\n") +
+				std::string("CX in Opp WR : ") + std::to_string(noOfCxinOppWR) + std::string("\n")
+			);
+		}
+
+
+		if (noOfCxinOppWR + noOfCxInOppDeck > 8) {
+			throw std::invalid_argument(std::string("Invalid Deck, too many Cxs, there should be less than 8 Cxs in the deck, the total Cx count appears to be ") + std::to_string(noOfCxinOppWR + noOfCxInOppDeck));
+		}
+
+		if (noOfCardsInOppDeck + noOfCardsInOppWR != 50) {
+			throw std::invalid_argument(std::string("Invalid Deck, card count should be exactly 50, card count appears to be ") + std::to_string(noOfCardsInOppDeck + noOfCardsInOppWR));
+		}
+
+
+	}
+	catch (std::exception & err) {
+		std::cout << "Standard Exception: " << err.what() << std::endl;
+		return 1;
+	}
 
 	std::cout << "Enter attack order, enter zero or non integer to stop" << std::endl;
 	while ((std::cin >> tempAttackValue) && tempAttackValue != 0) {
@@ -47,38 +76,42 @@ int main(void) {
 	
 	//obtain game state
 
-	
-	std::map<int, int> damageChart; //Initialize damage chart for output
-	std::vector<damageAction>damageSequence(inputAttackSequence.size(),damageAction(0));//
+	try {
+
+		std::map<int, int> damageChart; //Initialize damage chart for output
+		std::vector<damageAction>damageSequence(inputAttackSequence.size(), damageAction(0));//
 
 
-	weissSimulation weissTest; //Initialize Simulation
-	weissPlayer selfInit(weissDeck(10, 3));//Initialize self deck state
-	weissPlayer opponentInit(weissDeck(noOfCardsInOppDeck, noOfCxInOppDeck), weissDeck(noOfCardsInOppWR, noOfCxinOppWR)); //Initialize  opponent deck state and WR state
+		weissSimulation weissTest; //Initialize Simulation
+		weissPlayer selfInit(weissDeck(10, 3));//Initialize self deck state
+		weissPlayer opponentInit(weissDeck(noOfCardsInOppDeck, noOfCxInOppDeck), weissDeck(noOfCardsInOppWR, noOfCxinOppWR)); //Initialize  opponent deck state and WR state
 
 
-	int i = 0;
-	for (auto dmg: inputAttackSequence) {
-		damageSequence[i] = damageAction(dmg);
-		++i;
+		int i = 0;
+		for (auto dmg : inputAttackSequence) {
+			damageSequence[i] = damageAction(dmg);
+			++i;
+		}
+
+		//Run simulation
+		weissTest.runWeissSimulation(MAX_ITER, damageChart, selfInit, opponentInit, damageSequence);
+
+
+
+		//Report results
+		for (auto i = damageChart.begin(); i != damageChart.end(); ++i) { //output damage results
+			double damage = i->first; //map is inherently a pair, as such, use iter-> first and iter->second to get key and value
+			double hitCount = i->second;
+
+			double hitRate = 100 * hitCount / MAX_ITER;
+			std::cout.precision(4);
+			std::cout << "Damage: " << damage << "  " << "Chance :" << hitRate << "%" << std::endl;//output damage distribution
+
+		}
 	}
-
-	 //
-	
-
-	weissTest.runWeissSimulation(MAX_ITER,damageChart,selfInit,opponentInit,damageSequence);
-
-
-
-	//Report results
-	for (auto i = damageChart.begin(); i != damageChart.end();++i) { //output damage results
-		double damage = i->first; //map is inherently a pair, as such, use iter-> first and iter->second to get key and value
-		double hitCount = i->second;
-
-		double hitRate = 100 * hitCount / MAX_ITER;
-		std::cout.precision(4);
-		std::cout << "Damage: " << damage <<"  " << "Chance :" << hitRate << "%" << std::endl;//output damage distribution
-
+	catch (std::exception& e) {
+		std::cout << e.what() << std::endl;
+		return 1;
 	}
 
 	
@@ -90,6 +123,6 @@ int main(void) {
 	std::cout.precision(4);
 	std::cout << "Run Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count() <<"ms"<< std::endl; //output run time
 	
-
+	return 0;
 	
 }
