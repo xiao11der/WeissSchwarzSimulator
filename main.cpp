@@ -114,7 +114,7 @@ int main(void) {
 
 		}
 	}
-	catch (std::exception& e) {
+	catch (std::exception& e) {//Use standard exceptions to report errors
 		std::cout << e.what() << std::endl;
 		return 1;
 	}
