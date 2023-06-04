@@ -25,8 +25,9 @@ public:
 	weissDeck& getClock(void);
 
 	
-	void takeDamage(int amount);
-	bool burnDeck(int damage);
+	bool takeDamage(int amount);
+	void takeUncanDamage(int amount);
+	bool burnDeck(int damage, bool canBeCanceled);
 	void takeRefreshDamage(void);
 	void shuffleDeck(void);
 	void levelUp(void);

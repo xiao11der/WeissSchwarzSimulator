@@ -1,6 +1,6 @@
 #include "damageAction.h"
 
-damageAction::damageAction(int amount, bool performTrigger, std::vector<std::shared_ptr<effectAction>> preAttackActionSequence, std::vector<std::shared_ptr<effectAction>> onCancelActionSequence, std::vector<std::shared_ptr<effectAction>> postAttackActionSequence)
+damageAction::damageAction(int amount, std::deque<effectAction*> preAttackActionSequence, std::deque<effectAction*> onCancelActionSequence, std::deque<effectAction*> postAttackActionSequence, bool performTrigger)
 	:
 	mAmount(amount),
 	mTrigger(performTrigger),
@@ -28,7 +28,19 @@ int damageAction::performDamageAction(weissPlayer& self, weissPlayer& opponent) 
 
 	int initialDamage = opponent.getLevel().getNoOfCards()*7+opponent.getClock().getNoOfCards(); //Initial opponent damage
 
-	opponent.takeDamage(mAmount);
+	while (mPreAttackAction.size() > 0) { //resolve all preattack queue
+		mPreAttackAction.front()->performAction(self, opponent, mOnCancelAction);
+		mPreAttackAction.pop_front();
+	}
+
+	if (!opponent.takeDamage(mAmount)) { //resolve main damage, if cancel occurs, resolve oncancel sequence
+		while (mOnCancelAction.size() > 0) {
+			std::deque<effectAction*> emptyCancel = std::deque<effectAction*>(); //I should find a more elegant way to do this
+			mOnCancelAction.front()->performAction(self, opponent, emptyCancel);
+			mOnCancelAction.pop_front();
+		}
+
+	};
 
 	int finalDamage= opponent.getLevel().getNoOfCards() * 7 + opponent.getClock().getNoOfCards(); //final opponent damage
 

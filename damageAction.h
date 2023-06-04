@@ -9,16 +9,18 @@
 #include "effectAction.h"
 #include"weissPlayer.h"
 #include<memory>
+#include<deque>
 
 
 class damageAction {
 
 public:
 	
-	damageAction(int amount, bool performTrigger, //Ctor with all possible attack elements
-		std::vector<std::shared_ptr<effectAction>> preAttackActionSequence,
-		std::vector<std::shared_ptr<effectAction>> onCancelActionSequence,
-		std::vector<std::shared_ptr<effectAction>> postAttackActionSequence
+	damageAction(int amount, //Ctor with all effects
+		std::deque<effectAction*> preAttackActionSequence = std::deque<effectAction*>(),
+		std::deque<effectAction*> onCancelActionSequence = std::deque<effectAction*>(),
+		std::deque<effectAction*> postAttackActionSequence = std::deque<effectAction*>(),
+		bool performTrigger = false
 	);
 
 	damageAction(int amount, bool performTrigger = false //Ctor with just amount and trigger
@@ -30,9 +32,9 @@ public:
 private:
 	int mAmount;
 	bool mTrigger;
-	std::vector<std::shared_ptr<effectAction>> mPreAttackAction;
-	std::vector<std::shared_ptr<effectAction>> mPostAttackAction;
-	std::vector<std::shared_ptr<effectAction>> mOnCancelAction;
+	std::deque<effectAction*> mPreAttackAction;
+	std::deque<effectAction*> mPostAttackAction;
+	std::deque<effectAction*> mOnCancelAction;
 
 
 };

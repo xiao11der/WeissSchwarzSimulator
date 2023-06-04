@@ -76,9 +76,9 @@ void weissPlayer::combine(weissDeck& deckSource, weissDeck& deckDest) {
 }
 
 
-void weissPlayer::takeDamage(int amount) { //Overall damage calculation for cancellable damage
+bool weissPlayer::takeDamage(int amount) { //Overall damage calculation for cancellable damage
 	
-	if (burnDeck(amount)) {
+	if (burnDeck(amount,true)) { // if damage sticks
 		combine(mPlayerResolution, mPlayerClock);
 		while(mPlayerClock.getNoOfCards() >= 7) { //Level up
 			weissPlayer::levelUp();
@@ -87,17 +87,34 @@ void weissPlayer::takeDamage(int amount) { //Overall damage calculation for canc
 		if (mQueueRefreshDamage) {//Take refresh damage if necessary
 			weissPlayer::takeRefreshDamage();
 		}
+
+		return true; //return damage sticks
 	}
-	else {
+	else { // if damage cancels
 		combine(mPlayerResolution, mPlayerWaitingRoom);
 		if (mQueueRefreshDamage) {//Take refresh damage if necessary
 			weissPlayer::takeRefreshDamage();
 		}
+
+		return false; //return damage cancel
 	}
 
 }
 
-bool weissPlayer::burnDeck(int damage) { //Subfunction to take x cancellable damage from top deck and refresh as necessary
+void weissPlayer::takeUncanDamage(int amount) { //Overall damage calculation for uncancellable damage
+	burnDeck(amount, false);
+	combine(mPlayerResolution, mPlayerClock);
+	while (mPlayerClock.getNoOfCards() >= 7) { //Level up
+		weissPlayer::levelUp();
+	}
+
+	if (mQueueRefreshDamage) {//Take refresh damage if necessary
+		weissPlayer::takeRefreshDamage();
+	}
+
+}
+
+bool weissPlayer::burnDeck(int damage, bool canBeCanceled) { //Subfunction to take x cancellable damage from top deck and refresh as necessary
 	card topCard;
 
 	for (int i = 0; i < damage; i++) {
@@ -112,9 +129,10 @@ bool weissPlayer::burnDeck(int damage) { //Subfunction to take x cancellable dam
 		}
 
 		
-
-		if (topCard.getType() == "climax") {
-			return false; //damage canacled
+		if (canBeCanceled) {
+			if (topCard.getType() == "climax") {
+				return false; //damage canacled
+			}
 		}
 	}
 	return true;

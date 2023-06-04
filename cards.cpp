@@ -2,7 +2,7 @@
 #include"cards.h"
 #include<stdexcept>
 
-card::card(int level, int soul, bool trigger,  std::string color, std::string type) {
+card::card(int level, int soul, int trigger,  std::string color, std::string type) {
 
 	if (level < 0 || level >3) {
 		throw std::invalid_argument(std::string("Level must be between 0 and 3 for a card, your level is: ")+std::to_string(level));
@@ -28,7 +28,7 @@ card::card(std::string type) {
 	
 	card::mLevel = 1;
 	card::mSoul = 1;
-	card::mTrigger = true;
+	card::mTrigger = 0;
 	card::mColor = "blue";
 	card::mType = type;
 

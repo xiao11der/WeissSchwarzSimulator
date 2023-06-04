@@ -11,14 +11,21 @@
 class effectAction {
 
 public:
-	effectAction(std::string name): mName(name){};
 
-	virtual void performAction(weissPlayer& self, weissPlayer& opponent) {
-	};
+	virtual void performAction(weissPlayer& self, weissPlayer& opponent, std::deque<effectAction*>& onCancel) = 0; //Abstract class, all effect actions should be derived classes, and effect action can only be passed by pointer, not value
+
+
+};
+
+class burnX : public effectAction { //single instance of burn X
+
+public:
+	burnX(int amount);
+
+	void performAction(weissPlayer& self, weissPlayer& opponent, std::deque<effectAction*>& onCancel);
 
 
 private:
-	std::string mName;
-	
+	int mAmount;
 
 };

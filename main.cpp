@@ -79,27 +79,39 @@ int main(void) {
 	try {
 
 		std::map<int, int> damageChart; //Initialize damage chart for output
-		std::vector<damageAction>damageSequence(inputAttackSequence.size(), damageAction(0));//
+		std::vector<damageAction>damageSequence(inputAttackSequence.size(), damageAction(0, false));//
 
 		//TO-DO: Add config options class to simulation with options to run arbitrary amount of iterations, and to either run with old or new refresh rules, modify tests accordingly
 		weissSimulation weissTest; //Initialize Simulation
 		weissPlayer selfInit(weissDeck(10, 3));//Initialize self deck state
 		weissPlayer opponentInit(weissDeck(noOfCardsInOppDeck, noOfCxInOppDeck), weissDeck(noOfCardsInOppWR, noOfCxinOppWR)); //Initialize  opponent deck state and WR state
 
+		//Initialize variables for effects
+		
+		std::deque<effectAction*> onAttack = std::deque<effectAction*>();
+		
+		std::deque<effectAction*> onCancel = std::deque<effectAction*>();
+		
+		std::deque<effectAction*> postAttack = std::deque<effectAction*>();
 
 		int i = 0;
+		
+		//--------TEST CODE FOR ON ATTACK BURN 1 ON CANCEL BURN 1---------//
+		burnX* burn1 = new burnX(1);
+		onCancel.push_back(burn1);
+		//--------TEST CODE FOR ON ATTACK BURN 1 ON CANCEL BURN 1---------//
+
+
+		
+
 		for (auto dmg : inputAttackSequence) {
-			damageSequence[i] = damageAction(dmg);
+			damageSequence[i] = damageAction(dmg, onAttack, onCancel, postAttack, false);
 			++i;
 		}
 
 		//Run simulation
-		if (weissTest.runWeissSimulation(MAX_ITER, damageChart, selfInit, opponentInit, damageSequence)) {
+		weissTest.runWeissSimulation(MAX_ITER, damageChart, selfInit, opponentInit, damageSequence);
 
-		}
-		else {
-			throw std::runtime_error(std::string("Unknown error in simulation run stage, simulation has not completed \n"));
-		}
 
 
 

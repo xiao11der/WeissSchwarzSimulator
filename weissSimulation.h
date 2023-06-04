@@ -15,7 +15,7 @@ class weissSimulation {
 	//Add new public shell function, move runWeissSimulation to private
 public:
 	weissSimulation(){};
-	bool runWeissSimulation(int iterationCount, std::map<int, int>& damageChart, weissPlayer selfInit, weissPlayer opponentInit, std::vector<damageAction> damageSequence);
+	void runWeissSimulation(int iterationCount, std::map<int, int>& damageChart, weissPlayer selfInit, weissPlayer opponentInit, std::vector<damageAction> damageSequence);
 
 private:
 
