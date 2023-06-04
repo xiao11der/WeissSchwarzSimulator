@@ -16,6 +16,7 @@ weissPlayer::weissPlayer(weissDeck deckState) { //Ctor with deck only
 
 
 	mPlayerResolution = weissDeck(0, 0); 
+	mAddSoul = 0; //No additional souls until trigger check
 
 }
 
@@ -32,6 +33,7 @@ weissPlayer::weissPlayer(weissDeck deckState, weissDeck waitingRoomState) { //Ct
 
 
 	mPlayerResolution = weissDeck(0, 0);
+	mAddSoul = 0; //No additional souls until trigger check
 
 }
 
@@ -48,6 +50,7 @@ weissPlayer::weissPlayer(weissDeck deckState, weissDeck waitingRoomState, weissD
 	
 	
 	mPlayerResolution = weissDeck(0, 0); //zero-initialize resolution zone 
+	mAddSoul = 0; //No additional souls until trigger check
 }
 
 weissPlayer::weissPlayer(weissPlayer& p1)
@@ -61,11 +64,37 @@ weissPlayer::weissPlayer(weissPlayer& p1)
 	mPlayerLevel = p1.mPlayerLevel;
 	
 	mPlayerResolution = p1.mPlayerResolution; //zero-initialize resolution zone
+	mAddSoul = 0; //No additional souls until trigger check
 } 
 
 void weissPlayer::shuffleDeck(void) {
 	mPlayerDeck.shuffle();
 }
+
+void weissPlayer::triggerCheck(void) {
+	
+	//Check trigger and add soul
+	card trigger = mPlayerDeck.mContent.front();
+	mAddSoul += trigger.getTrigger();
+
+	mPlayerStock.mContent.push_front(trigger);
+	mPlayerDeck.mContent.pop_front();
+
+	if (mPlayerDeck.getNoOfCards() == 0) {
+		combine(mPlayerWaitingRoom, mPlayerDeck);
+		mPlayerDeck.shuffle();
+		mQueueRefreshDamage = true;
+	}
+
+	if (mQueueRefreshDamage) {
+
+		takeRefreshDamage();
+
+	}
+
+
+}
+
 void weissPlayer::combine(weissDeck& deckSource, weissDeck& deckDest) {
 
 	for (auto card : deckSource.mContent) {
@@ -122,7 +151,7 @@ bool weissPlayer::burnDeck(int damage, bool canBeCanceled) { //Subfunction to ta
 		mPlayerResolution.mContent.push_back(topCard); //Push to resolution zone
 		mPlayerDeck.mContent.pop_front();
 
-		if (mPlayerDeck.mContent.size()==0) { //Refresh if deck runs out, queue refresh damage if needed
+		if (mPlayerDeck.getNoOfCards() == 0) { //Refresh if deck runs out, queue refresh damage if needed
 			combine(mPlayerWaitingRoom, mPlayerDeck);
 			mPlayerDeck.shuffle();
 			mQueueRefreshDamage=true;
@@ -184,6 +213,14 @@ void weissPlayer::takeRefreshDamage(void) {
 
 }
 
+void weissPlayer::endOfAttack(void) {
+
+	//Clean up function at end of each swing
+
+	//Clear additional soul
+	mAddSoul = 0;
+}
+
 weissDeck& weissPlayer::getClock(void) {
 	return mPlayerClock;
 }
@@ -192,3 +229,8 @@ weissDeck& weissPlayer::getLevel(void) {
 	return mPlayerLevel;
 
 }
+
+int weissPlayer::getCurrentSoul(void) {
+	return mAddSoul;
+}
+

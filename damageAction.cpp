@@ -33,7 +33,16 @@ int damageAction::performDamageAction(weissPlayer& self, weissPlayer& opponent) 
 		mPreAttackAction.pop_front();
 	}
 
-	if (!opponent.takeDamage(mAmount)) { //resolve main damage, if cancel occurs, resolve oncancel sequence
+	int addSoul = 0;
+	//Trigger check if needed
+	if (mTrigger) {
+		self.triggerCheck();
+		addSoul = self.getCurrentSoul();
+	}
+
+	//std::cout << addSoul << std::endl;
+
+	if (!opponent.takeDamage(mAmount + addSoul)) { //resolve main damage, if cancel occurs, resolve oncancel sequence
 		while (mOnCancelAction.size() > 0) {
 			std::deque<effectAction*> emptyCancel = std::deque<effectAction*>(); //I should find a more elegant way to do this
 			mOnCancelAction.front()->performAction(self, opponent, emptyCancel);
@@ -43,6 +52,12 @@ int damageAction::performDamageAction(weissPlayer& self, weissPlayer& opponent) 
 	};
 
 	int finalDamage= opponent.getLevel().getNoOfCards() * 7 + opponent.getClock().getNoOfCards(); //final opponent damage
+
+	//Reset self soul if trigger action was used
+	if (mTrigger) {
+		self.endOfAttack();
+	}
+
 
 	int totalDamage = finalDamage - initialDamage;
 

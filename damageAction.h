@@ -10,6 +10,7 @@
 #include"weissPlayer.h"
 #include<memory>
 #include<deque>
+#include<iostream>
 
 
 class damageAction {

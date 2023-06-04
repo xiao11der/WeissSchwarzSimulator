@@ -98,14 +98,14 @@ int main(void) {
 		
 		//--------TEST CODE FOR ON ATTACK BURN 1 ON CANCEL BURN 1---------//
 		burnX* burn1 = new burnX(1);
-		onCancel.push_back(burn1);
+		//onCancel.push_back(burn1);
 		//--------TEST CODE FOR ON ATTACK BURN 1 ON CANCEL BURN 1---------//
 
 
 		
 
 		for (auto dmg : inputAttackSequence) {
-			damageSequence[i] = damageAction(dmg, onAttack, onCancel, postAttack, false);
+			damageSequence[i] = damageAction(dmg, onAttack, onCancel, postAttack, true);
 			++i;
 		}
 
