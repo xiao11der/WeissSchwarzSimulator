@@ -104,6 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,6 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,6 +136,7 @@
     <ClCompile Include="deck.cpp" />
     <ClCompile Include="effectAction.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="parser.cpp" />
     <ClCompile Include="weissPlayer.cpp" />
     <ClCompile Include="weissSimulation.cpp" />
   </ItemGroup>
@@ -142,6 +145,7 @@
     <ClInclude Include="damageAction.h" />
     <ClInclude Include="deck.h" />
     <ClInclude Include="effectAction.h" />
+    <ClInclude Include="parser.h" />
     <ClInclude Include="weissPlayer.h" />
     <ClInclude Include="weissSimulation.h" />
   </ItemGroup>

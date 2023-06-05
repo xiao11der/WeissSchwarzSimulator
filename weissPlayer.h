@@ -9,7 +9,7 @@ class weissPlayer {
 public:
 
 	weissPlayer(weissDeck deckState); //Minimal Ctor
-	weissPlayer(weissDeck deckState, weissDeck waitingRoomState); //Minimal Ctor
+	weissPlayer(weissDeck deckState, weissDeck waitingRoomState); //Minimal Ctor with waiting room
 
 	weissPlayer(weissDeck deckState,
 		weissDeck waitingRoomState,

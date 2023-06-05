@@ -4,6 +4,7 @@
 #include <string>
 #include<stdexcept>
 #include<algorithm>
+#include<random>
 
 weissDeck::weissDeck(int noOfCards, int noOfCx) {
 	if (noOfCx > 8) {
@@ -24,7 +25,9 @@ weissDeck::weissDeck(int noOfCards, int noOfCx) {
 }
 
 void weissDeck::shuffle(void) {
-	std::random_shuffle(mContent.begin(), mContent.end());
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(mContent.begin(), mContent.end(), g);
 }
 
 
