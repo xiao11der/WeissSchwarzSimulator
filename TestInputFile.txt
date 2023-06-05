@@ -1,0 +1,74 @@
+// "//" is comment, it will not be parsed
+// # marks the beginning of a section, make sure it is "CONFIG", "SELF", "OPPONENT", "ATTACK"
+// ATTACK must come last
+// soul must be defined FIRST in attack section
+// ## marks the end of a section
+// % Marks the beginning of attack action step, make sure it is "OnAttack", "OnCancel", or "PostAttack", this must be embedded in attack sections
+// %% marks the end of an attack action step
+// * marks the beginning of an effect, currently supports "BurnX"
+// ** marks the end of an effect
+
+
+//CONFIG
+#CONFIG
+MAX_ITER = 10000
+TRIGGER = TRUE
+##
+
+//SELF GAME STATE
+#SELF
+GAME_STATE_TYPE = SIMPLE
+NO_OF_CARDS_IN_DECK = 55
+NO_OF_TRIGGER_IN_DECK = 15
+NO_OF_CARDS_IN_WR = 0
+##
+
+//OPPONENT GAME STATE
+#OPPONENT
+GAME_STATE_TYPE = SIMPLE
+NO_OF_CARDS_IN_DECK = 50
+NO_OF_CX_IN_DECK = 8
+NO_OF_CARDS_IN_WR = 0
+NO_OF_CX_IN_WR = 0
+##
+
+//ATTACK SEQUENCE
+#ATTACK
+
+SOUL = 3
+
+%OnCancel
+
+*BURNX
+AMOUNT = 1
+**
+
+%%
+
+##
+
+#ATTACK
+
+SOUL = 3
+
+%OnCancel
+*BURNX
+AMOUNT = 1
+**
+
+%%
+
+##
+
+#ATTACK
+
+SOUL = 3
+
+%OnCancel
+*BURNX
+AMOUNT = 1
+**
+
+%%
+
+##
