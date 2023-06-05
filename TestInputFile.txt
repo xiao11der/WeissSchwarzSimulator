@@ -37,7 +37,31 @@ NO_OF_CX_IN_WR = 0
 
 SOUL = 3
 
+%OnAttack
+
+*BURNX
+AMOUNT = 4
+**
+
+%%
+
 %OnCancel
+
+*BURNX
+AMOUNT = 5
+**
+
+*BURNX
+AMOUNT = 5
+**
+
+*BURNX
+AMOUNT = 5
+**
+
+%%
+
+%PostAttack
 
 *BURNX
 AMOUNT = 1
