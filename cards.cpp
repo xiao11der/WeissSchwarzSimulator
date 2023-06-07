@@ -16,21 +16,34 @@ card::card(int level, int soul, int trigger,  std::string color, std::string typ
 	card::mLevel = level;
 	card::mSoul = soul;
 	card::mTrigger = trigger;
+
+
+
 	card::mColor = color;
 	card::mType = type;
 
 }
 
-card::card(std::string type) {
+card::card(std::string type) { //generic card
 	if (_stricmp(type.c_str(), "character") != 0 && _stricmp(type.c_str(), "event") != 0 && _stricmp(type.c_str(), "climax") != 0) {
 		throw std::invalid_argument(std::string("Invalid type -- Needs to be character, event, or climax. Your type is: ") + type);
 	}
 	
-	card::mLevel = 1;
-	card::mSoul = 1;
-	card::mTrigger = 0;
-	card::mColor = "blue";
-	card::mType = type;
+	if (_stricmp(type.c_str(), "climax") == 0) {
+		card::mLevel = 0;
+		card::mSoul = 0;
+		card::mTrigger = 0;
+		card::mColor = "blue";
+		card::mType = type;
+
+	}
+	else {
+		card::mLevel = 1;
+		card::mSoul = 1;
+		card::mTrigger = 0;
+		card::mColor = "blue";
+		card::mType = type;
+	}
 
 }
 

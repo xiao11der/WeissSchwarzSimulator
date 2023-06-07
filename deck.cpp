@@ -32,7 +32,6 @@ void weissDeck::shuffle(void) {
 
 
 
-
 unsigned weissDeck::getNoOfCards(void) {
 	return mContent.size();
 }

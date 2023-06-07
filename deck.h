@@ -2,6 +2,10 @@
 #include<deque>
 #include "cards.h"
 
+
+//Helper functions that help with effects
+
+
 class weissDeck {
 	friend class weissPlayer;
 	
@@ -11,8 +15,13 @@ public:
 	weissDeck(const weissDeck& p1); //copy ctor
 
 
+
+	
+
+
 	void shuffle(void);
 	unsigned getNoOfCards(void);
+
 
 private:
 	std::deque<card> mContent;

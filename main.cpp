@@ -127,6 +127,10 @@ int main(void) {
 		weissPlayer selfInit(weissDeck(10, 3));//Initialize self deck state
 		weissPlayer opponentInit(weissDeck(noOfCardsInOppDeck, noOfCxInOppDeck), weissDeck(noOfCardsInOppWR, noOfCxInOppWR)); //Initialize  opponent deck state and WR state
 
+
+		//Test Reporting function, mill top 5, report and send to top
+		//deckReport tempReport = opponentInit.createReportXCards(5, TOP, TOPDECK);
+
 		//--------------------------------CMD POST PROCESSING---------------------------------------//
 		
 		//std::vector<damageAction>damageSequence(inputAttackSequence.size(), damageAction(0, false));//

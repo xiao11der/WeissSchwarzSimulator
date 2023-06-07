@@ -3,6 +3,17 @@
 #include <string>
 #include<stdexcept>
 #include<algorithm>
+#include<map>
+
+struct deckReport {
+	int noOfCx = 0;
+	std::map<int, int> levelDist;
+	std::map<int, int> triggerDist;
+	std::map<std::string, int> colorDist;
+};
+enum peekPos { TOP, BOTTOM };
+enum postReport { WR, DECKSHUFFLE, TOPDECK, BOTDECK};
+
 
 class weissPlayer {
 
@@ -35,6 +46,11 @@ public:
 	void shuffleDeck(void);
 	void levelUp(void);
 	void triggerCheck(void);
+	
+	//Helper Functions
+	deckReport createReportXCards(int x, peekPos peekSide, postReport postReportAction);
+
+
 	
 
 	//System functions needed to run simulator that occurs intrinsically in game

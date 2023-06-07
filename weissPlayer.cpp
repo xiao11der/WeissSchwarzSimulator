@@ -71,6 +71,74 @@ void weissPlayer::shuffleDeck(void) {
 	mPlayerDeck.shuffle();
 }
 
+
+deckReport weissPlayer::createReportXCards(int x, peekPos peekSide, postReport postReportAction) {
+
+	deckReport outStruct;
+
+	if (x > 50) {
+		throw std::runtime_error("You cannot look at more than 50 cards");
+	}
+
+	switch (peekSide) {
+	case TOP:
+		for (int i = 0; i < x; ++i) {
+			card topCard = mPlayerDeck.mContent.front();
+			if (topCard.getType() == "climax") {
+				outStruct.noOfCx++;
+			}
+			outStruct.levelDist[topCard.getLevel()]++;
+			outStruct.triggerDist[topCard.getTrigger()]++;
+			outStruct.colorDist[topCard.getColor()]++;
+			mPlayerResolution.mContent.push_back(topCard);
+			mPlayerDeck.mContent.pop_front();
+		}
+		break;
+	case BOTTOM:
+		for (int i = 0; i < x; ++i) {
+			card botCard = mPlayerDeck.mContent.back();
+			if (botCard.getType() == "climax") {
+				outStruct.noOfCx++;
+			}
+			outStruct.levelDist[botCard.getLevel()]++;
+			outStruct.triggerDist[botCard.getTrigger()]++;
+			outStruct.colorDist[botCard.getColor()]++;
+			mPlayerResolution.mContent.push_back(botCard);
+			mPlayerDeck.mContent.pop_back();
+		}
+		break;
+	default:
+		throw std::runtime_error("You must look from top or bottom of deck when creating deck report, keywords are TOP and BOTTOM");
+	}
+
+	switch (postReportAction) {
+	case WR:
+		combine(mPlayerResolution, mPlayerWaitingRoom);
+		break;
+	case TOPDECK: //back to top of deck
+		for (int i=0;i<x;++i){
+			mPlayerDeck.mContent.push_front(mPlayerResolution.mContent.back());
+			mPlayerResolution.mContent.pop_back();
+		}
+		break;
+	case BOTDECK: //goes to bottom deck in the reverse order it came in
+		for (int i = 0; i < x; ++i) {
+			mPlayerDeck.mContent.push_back(mPlayerResolution.mContent.back());
+			mPlayerResolution.mContent.pop_back();
+		}
+		break;
+	case DECKSHUFFLE:
+		combine(mPlayerResolution, mPlayerDeck);
+		mPlayerDeck.shuffle();
+		break;
+	default:
+		throw std::runtime_error("Wrong mode for manipulating X cards, it must be WR, TOPDECK, BOTDECK, or DECKSHUFFLE");
+	}
+
+
+	return outStruct;
+}
+
 void weissPlayer::triggerCheck(void) {
 	
 	//Check trigger and add soul
