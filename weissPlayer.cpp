@@ -87,9 +87,11 @@ deckReport weissPlayer::createReportXCards(int x, peekPos peekSide, postReport p
 			if (topCard.getType() == "climax") {
 				outStruct.noOfCx++;
 			}
+
 			outStruct.levelDist[topCard.getLevel()]++;
 			outStruct.triggerDist[topCard.getTrigger()]++;
 			outStruct.colorDist[topCard.getColor()]++;
+			outStruct.raw.append(std::format("|t:{} c:{} l:{} t:{} s:{}", topCard.getType(), topCard.getColor(), topCard.getLevel(), topCard.getTrigger(), topCard.getSoul()));
 			mPlayerResolution.mContent.push_back(topCard);
 			mPlayerDeck.mContent.pop_front();
 		}
@@ -100,9 +102,11 @@ deckReport weissPlayer::createReportXCards(int x, peekPos peekSide, postReport p
 			if (botCard.getType() == "climax") {
 				outStruct.noOfCx++;
 			}
+
 			outStruct.levelDist[botCard.getLevel()]++;
 			outStruct.triggerDist[botCard.getTrigger()]++;
 			outStruct.colorDist[botCard.getColor()]++;
+			outStruct.raw.append(std::format("|t:{} c:{} l:{} t:{} s:{}", botCard.getType(), botCard.getColor(), botCard.getLevel(), botCard.getTrigger(), botCard.getSoul()));
 			mPlayerResolution.mContent.push_back(botCard);
 			mPlayerDeck.mContent.pop_back();
 		}

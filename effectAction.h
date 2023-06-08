@@ -7,6 +7,7 @@
 #include<algorithm>
 #include <map>
 #include "weissPlayer.h"
+#include "Python.h"
 
 class effectAction {
 
@@ -28,4 +29,19 @@ public:
 private:
 	int mAmount;
 
+};
+
+
+
+class pythonBurn : public effectAction {
+
+
+	pythonBurn(std::string pyFile, deckReportIn reportInstructions);
+
+	void performAction(weissPlayer& self, weissPlayer& opponent, std::deque<effectAction*>& onCancel);
+
+private:
+	std::string mPyfile;
+	deckReportIn mReportInstructions;
+	deckReport mReportResult;
 };

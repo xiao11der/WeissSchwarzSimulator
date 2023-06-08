@@ -4,15 +4,23 @@
 #include<stdexcept>
 #include<algorithm>
 #include<map>
+#include<format>
 
 struct deckReport {
 	int noOfCx = 0;
 	std::map<int, int> levelDist;
 	std::map<int, int> triggerDist;
 	std::map<std::string, int> colorDist;
+	std::string raw = "";
 };
 enum peekPos { TOP, BOTTOM };
 enum postReport { WR, DECKSHUFFLE, TOPDECK, BOTDECK};
+
+struct deckReportIn {
+	int x;
+	peekPos peekSide;
+	postReport postReportAction;
+};
 
 
 class weissPlayer {

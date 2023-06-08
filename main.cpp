@@ -49,7 +49,7 @@ int main(void) {
 	}
 	catch(std::exception& err) {
 		std::cout << "Standard Exception During Input Parse: " << err.what() << std::endl;
-		return -1;
+		return 1;
 	}
 	//---------------------INPUT FROM FILE-----------------------//
 
