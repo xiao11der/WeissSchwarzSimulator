@@ -74,6 +74,10 @@
     <IncludePath>C:\Users\azure\AppData\Local\Programs\Python\Python39\include;C:\Users\azure\AppData\Local\Programs\Python\Python39\Lib\site-packages\pybind11\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\azure\AppData\Local\Programs\Python\Python39\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Users\azure\AppData\Local\Programs\Python\Python311\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\azure\AppData\Local\Programs\Python\Python311\libs;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>

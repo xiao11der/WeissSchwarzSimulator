@@ -2,17 +2,32 @@
 #include"cards.h"
 #include<stdexcept>
 
-card::card(int level, int soul, int trigger,  std::string color, std::string type) {
+
+
+card::card(int level, int soul, int trigger, cardColor color, cardType type) {
 
 	if (level < 0 || level >3) {
 		throw std::invalid_argument(std::string("Level must be between 0 and 3 for a card, your level is: ")+std::to_string(level));
 	}
+
+	if (color < BLUE || color > GREEN) {
+		throw std::invalid_argument(std::string("Color must be green, yellow, blue, or red. Purple is not supported. Your color is: ") + std::to_string(color));
+	}
+
+	if (type < CHARACTER || type > CLIMAX) {
+		throw std::invalid_argument(std::string("Color must be green, yellow, blue, or red. Purple is not supported. Your color is: ") + std::to_string(type));
+	}
+
+
+	/*
 	if (_stricmp(color.c_str(), "yellow") != 0 && _stricmp(color.c_str(), "green") != 0 && _stricmp(color.c_str(), "blue")!=0 && _stricmp(color.c_str(), "red")!=0) {
 		throw std::invalid_argument(std::string("Color must be green, yellow, blue, or red. Purple is not supported. Your color is: ") + color);
 	}
 	if (_stricmp(type.c_str(), "character") != 0 && _stricmp(type.c_str(), "event")!=0 && _stricmp(type.c_str(), "climax")!=0) {
 		throw std::invalid_argument(std::string("Invalid type -- Needs to be character, event, or climax. Your type is: ")+type);
-	}
+	}*/
+
+
 	card::mLevel = level;
 	card::mSoul = soul;
 	card::mTrigger = trigger;
@@ -24,16 +39,17 @@ card::card(int level, int soul, int trigger,  std::string color, std::string typ
 
 }
 
-card::card(std::string type) { //generic card
-	if (_stricmp(type.c_str(), "character") != 0 && _stricmp(type.c_str(), "event") != 0 && _stricmp(type.c_str(), "climax") != 0) {
-		throw std::invalid_argument(std::string("Invalid type -- Needs to be character, event, or climax. Your type is: ") + type);
+card::card(cardType type) { //generic card
+
+	if (type < CHARACTER || type > CLIMAX) {
+		throw std::invalid_argument(std::string("Color must be green, yellow, blue, or red. Purple is not supported. Your color is: ") + std::to_string(type));
 	}
 	
-	if (_stricmp(type.c_str(), "climax") == 0) {
+	if (type == CLIMAX) {
 		card::mLevel = 0;
 		card::mSoul = 0;
 		card::mTrigger = 0;
-		card::mColor = "blue";
+		card::mColor = BLUE;
 		card::mType = type;
 
 	}
@@ -41,7 +57,7 @@ card::card(std::string type) { //generic card
 		card::mLevel = 1;
 		card::mSoul = 1;
 		card::mTrigger = 0;
-		card::mColor = "blue";
+		card::mColor = BLUE;
 		card::mType = type;
 	}
 

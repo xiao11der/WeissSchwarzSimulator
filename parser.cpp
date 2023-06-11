@@ -297,7 +297,7 @@ void trim(std::string& line) {
 
 	int lastNoneSpace = 0;
 
-	for (size_t i = line.length()-1; i >= 0; --i) {
+	for (int i = static_cast<int>(line.length() - 1); i >= 0; --i) { //use int because we want to iterate from the back of the line to the front, and terminate loop when cursor reaches front.
 		if (!(line[i] == ' ' || line[i] == '\t' || line[i] == '\n' || line[i] == '\r' || line[i] == '\f' || line[i] == '\v')) {
 			lastNoneSpace = i+1;
 			break;

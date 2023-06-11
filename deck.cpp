@@ -11,8 +11,8 @@ weissDeck::weissDeck(int noOfCards, int noOfCx) {
 		throw std::invalid_argument("Too many Climaxes!");
 	}
 
-	card genericCx = card("climax"); //Create generic Cx card
-	card genericChar = card("character");
+	card genericCx = card(CLIMAX); //Create generic Cx card
+	card genericChar = card(CHARACTER);
 	mContent = std::deque<card>(noOfCards, genericChar);
 	
 	for (int i = 0; i < noOfCx; i++) {

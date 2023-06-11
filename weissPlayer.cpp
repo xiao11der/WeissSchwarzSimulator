@@ -80,18 +80,46 @@ deckReport weissPlayer::createReportXCards(int x, peekPos peekSide, postReport p
 		throw std::runtime_error("You cannot look at more than 50 cards");
 	}
 
+	auto determineType = [](card inputCard) {
+		switch (inputCard.getType()) {
+		case CHARACTER:
+			return std::string("character");
+		case CLIMAX:
+			return std::string("climax");
+		case EVENT:
+			return std::string("event");
+		default:
+			throw std::runtime_error("Error while parsing card type trying to generate deck report, is the input validation active?");
+		}
+	};
+
+	auto determineColor = [](card inputCard) {
+		switch (inputCard.getColor()) {
+		case BLUE:
+			return std::string("blue");
+		case RED:
+			return std::string("red");
+		case GREEN:
+			return std::string("green");
+		case YELLOW:
+			return std::string("yellow");
+		default:
+			throw std::runtime_error("Error while parsing card color trying to generate deck report, is the input validation active?");
+		}
+	};
+
 	switch (peekSide) {
 	case TOP:
 		for (int i = 0; i < x; ++i) {
 			card topCard = mPlayerDeck.mContent.front();
-			if (topCard.getType() == "climax") {
+			if (topCard.getType() == CLIMAX) {
 				outStruct.noOfCx++;
 			}
 
 			outStruct.levelDist[topCard.getLevel()]++;
 			outStruct.triggerDist[topCard.getTrigger()]++;
 			outStruct.colorDist[topCard.getColor()]++;
-			outStruct.raw.append(std::format("|t:{} c:{} l:{} t:{} s:{}", topCard.getType(), topCard.getColor(), topCard.getLevel(), topCard.getTrigger(), topCard.getSoul()));
+			outStruct.raw.append(std::format("|c:{} l:{} t:{} s:{}", determineType(topCard), determineColor(topCard), topCard.getLevel(), topCard.getTrigger(), topCard.getSoul()));
 			mPlayerResolution.mContent.push_back(topCard);
 			mPlayerDeck.mContent.pop_front();
 		}
@@ -99,14 +127,14 @@ deckReport weissPlayer::createReportXCards(int x, peekPos peekSide, postReport p
 	case BOTTOM:
 		for (int i = 0; i < x; ++i) {
 			card botCard = mPlayerDeck.mContent.back();
-			if (botCard.getType() == "climax") {
+			if (botCard.getType() == CLIMAX) {
 				outStruct.noOfCx++;
 			}
 
 			outStruct.levelDist[botCard.getLevel()]++;
 			outStruct.triggerDist[botCard.getTrigger()]++;
 			outStruct.colorDist[botCard.getColor()]++;
-			outStruct.raw.append(std::format("|t:{} c:{} l:{} t:{} s:{}", botCard.getType(), botCard.getColor(), botCard.getLevel(), botCard.getTrigger(), botCard.getSoul()));
+			outStruct.raw.append(std::format("|t:{} c:{} l:{} t:{} s:{}", determineType(botCard), determineColor(botCard), botCard.getLevel(), botCard.getTrigger(), botCard.getSoul()));
 			mPlayerResolution.mContent.push_back(botCard);
 			mPlayerDeck.mContent.pop_back();
 		}
@@ -231,7 +259,7 @@ bool weissPlayer::burnDeck(int damage, bool canBeCanceled) { //Subfunction to ta
 
 		
 		if (canBeCanceled) {
-			if (topCard.getType() == "climax") {
+			if (topCard.getType() == CLIMAX) {
 				return false; //damage canacled
 			}
 		}
@@ -243,7 +271,7 @@ void weissPlayer::levelUp(void) {
 
 	for (auto i = mPlayerClock.mContent.begin(); i <= mPlayerClock.mContent.begin()+6; ++i) { //Iterate the first 7 cards of the clock, find card to level up, level up the first non-cx
 		card topClock = mPlayerClock.mContent.front();
-		if (topClock.getType() != "climax") {
+		if (topClock.getType() != CLIMAX) {
 			mPlayerLevel.mContent.push_back(topClock);
 			mPlayerClock.mContent.pop_front();
 			//std::cout << "found non-cx" << std::endl;

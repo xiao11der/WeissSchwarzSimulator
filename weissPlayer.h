@@ -10,7 +10,7 @@ struct deckReport {
 	int noOfCx = 0;
 	std::map<int, int> levelDist;
 	std::map<int, int> triggerDist;
-	std::map<std::string, int> colorDist;
+	std::map<cardColor, int> colorDist;
 	std::string raw = "";
 };
 enum peekPos { TOP, BOTTOM };

@@ -1,27 +1,30 @@
 #pragma once
 #include<string>
 
+enum cardColor { BLUE, RED, YELLOW, GREEN };
+enum cardType { CHARACTER, EVENT, CLIMAX };
+
 class card {
 
 public:
-	card(int level = 1, int soul = 1, int trigger = 0, std::string color = "blue", std::string type = "character"); //Normal constructor with specific traits
-	card(std::string type); //Ctor with type only
+	card(int level = 1, int soul = 1, int trigger = 0, cardColor = BLUE, cardType = CHARACTER); //Normal constructor with specific traits
+	card(cardType type); //Ctor with type only
 
 	card(const card& p1); //Copy Constructor
 
 	int getLevel(void) { return mLevel; };
 	int getSoul(void) { return mSoul; };
 	int getTrigger(void) { return mTrigger; };
-	std::string getColor(void) { return mColor; };
-	std::string getType(void) { return mType; };
+	cardColor getColor(void) { return mColor; };
+	cardType getType(void) { return mType; };
 	
 
 private:
 	int mLevel;
 	int mSoul;
 	int mTrigger;
-	std::string mColor;
-	std::string mType;
+	cardColor mColor;
+	cardType mType;
 
 	
 
