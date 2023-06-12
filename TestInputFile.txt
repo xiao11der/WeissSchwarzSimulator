@@ -39,60 +39,14 @@ SOUL = 3
 
 %OnAttack
 
-*BURNX
-AMOUNT = 4
-**
-
-%%
-
-%OnCancel
-
-*BURNX
-AMOUNT = 5
-**
-
-*BURNX
-AMOUNT = 5
-**
-
-*BURNX
-AMOUNT = 5
-**
-
-%%
-
-%PostAttack
-
-*BURNX
-AMOUNT = 1
+*PYTHON
+file = Test
 **
 
 %%
 
 ##
 
-#ATTACK
 
-SOUL = 3
 
-%OnCancel
-*BURNX
-AMOUNT = 1
-**
 
-%%
-
-##
-
-#ATTACK
-
-SOUL = 3
-
-%OnCancel
-*BURNX
-AMOUNT = 1
-**
-
-%%
-
-##

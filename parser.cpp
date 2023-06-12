@@ -235,6 +235,10 @@ gameStruct parseFile(std::string inputFile) {
 				swapEffectState("BurnX", currAttack);
 				continue;
 			}
+			if (line.rfind("*PYTHON", 0) == 0) {
+				swapEffectState("Python", currAttack);
+				continue;
+			}
 			else if (line.rfind("*", 0) == 0 && line.rfind("**", 0) != 0) {
 				throw std::invalid_argument(std::format("Line {}: Invalid effect keyword. Line Content: {}", lineCount, line));
 			}
@@ -249,7 +253,25 @@ gameStruct parseFile(std::string inputFile) {
 
 				if (amount != -999) {
 					currAttack.currArrayPointer->push_front(new burnX(amount));
+
 				}
+			}
+			
+			if (currAttack.effect == "Python") {
+
+				deckReportIn dummy_struct;
+				dummy_struct.peekSide = TOP;
+				dummy_struct.postReportAction = DECKSHUFFLE;
+				dummy_struct.x = 5;
+
+				std::string file = "";
+				currentParam = parseParam(line);
+				if (!_stricmp(currentParam.first.c_str(), "file")) {
+					file = currentParam.second;
+				}
+				currAttack.currArrayPointer->push_front(new pythonBurn(file, dummy_struct));
+
+
 			}
 
 			//Base attack parameters not including effects

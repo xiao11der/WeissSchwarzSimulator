@@ -8,6 +8,7 @@
 #include <map>
 #include "weissPlayer.h"
 #include "Python.h"
+#include<iostream>
 
 class effectAction {
 
@@ -35,6 +36,7 @@ private:
 
 class pythonBurn : public effectAction {
 
+public:
 
 	pythonBurn(std::string pyFile, deckReportIn reportInstructions);
 

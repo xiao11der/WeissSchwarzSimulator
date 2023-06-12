@@ -7,6 +7,7 @@
 #include<format>
 #include<vector>
 #include"damageAction.h"
+#include"effectAction.h"
 
 
 #define SIMPLE 0

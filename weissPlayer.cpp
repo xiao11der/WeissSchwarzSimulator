@@ -243,6 +243,55 @@ void weissPlayer::takeUncanDamage(int amount) { //Overall damage calculation for
 
 }
 
+void weissPlayer::shuffleBackNonCX(int amount) {
+
+	int cardsPutBack = 0;
+	card topWaitingRoom;
+	while (!mPlayerWaitingRoom.mContent.empty()) {
+		topWaitingRoom = mPlayerWaitingRoom.mContent.front();
+
+		if (topWaitingRoom.getType() != CLIMAX) {
+			mPlayerDeck.mContent.push_front(topWaitingRoom);
+			cardsPutBack++;
+		}
+		else {
+			mPlayerResolution.mContent.push_back(topWaitingRoom);
+		}
+
+		mPlayerWaitingRoom.mContent.pop_front();
+		if (cardsPutBack == amount) {
+			break;
+		}
+	}
+	combine(mPlayerResolution, mPlayerWaitingRoom);
+	mPlayerDeck.shuffle();
+
+}
+
+void weissPlayer::stockWash(stockWashMode mode) {
+	int noOfStock = mPlayerStock.getNoOfCards();
+	switch (mode) {
+	case TOWR:
+		combine(mPlayerStock, mPlayerWaitingRoom);
+		blindStock(noOfStock);
+		break;
+	case TODECK:
+		combine(mPlayerStock, mPlayerDeck);
+		mPlayerDeck.shuffle();
+		blindStock(noOfStock);
+		break;
+	default:
+		throw std::runtime_error("Wrong stock wash mode detected");
+	}
+}
+
+void weissPlayer::blindStock(int amount) {
+	for (int i = 0; i < amount; ++i) {
+		mPlayerStock.mContent.push_back(mPlayerDeck.mContent.front());
+		mPlayerDeck.mContent.pop_front();
+	}
+}
+
 bool weissPlayer::burnDeck(int damage, bool canBeCanceled) { //Subfunction to take x cancellable damage from top deck and refresh as necessary
 	card topCard;
 
@@ -270,7 +319,7 @@ bool weissPlayer::burnDeck(int damage, bool canBeCanceled) { //Subfunction to ta
 void weissPlayer::levelUp(void) {
 
 	for (auto i = mPlayerClock.mContent.begin(); i <= mPlayerClock.mContent.begin()+6; ++i) { //Iterate the first 7 cards of the clock, find card to level up, level up the first non-cx
-		card topClock = mPlayerClock.mContent.front();
+		card topClock = mPlayerClock.mContent.front(); 
 		if (topClock.getType() != CLIMAX) {
 			mPlayerLevel.mContent.push_back(topClock);
 			mPlayerClock.mContent.pop_front();

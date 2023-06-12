@@ -36,6 +36,8 @@ void pythonBurn::performAction(weissPlayer& self, weissPlayer& opponent, std::de
 	// 1. The python function should return an array of number/boolean pairs,each representing an instance, the number is amount of damage,  boolean is whether or not that instance is cancellable
 	// 2. The python function should return a string, with the damages and "cancellability" chained, and deliminated by some predefined deliminter
 	// 3. The python will return a N*2 array of ints, where the first column of array represents damage, second one represents whether or not its cancellable (T=0, F=1)
+	// 4. Return a N*2 int array, where the first column is a int that gives the action, where the second column is ONE parameter (e.g. x damage, or x amount to shuffle back)
+	// 5. Return a N length array of strings, with commas seperating arguments, and the first word being the keyword to be interpreted
 	// Loop through returned array, and execute burnX or topXToClock
 	// https://docs.python.org/release/2.6.5/extending/embedding.html#pure-embedding
 	// https://docs.python.org/3/c-api/intro.html
@@ -43,9 +45,56 @@ void pythonBurn::performAction(weissPlayer& self, weissPlayer& opponent, std::de
 	//
 	// ------------------------------------------------------Scrap Paper Section----------------------------------------------//
 
+	PyObject *pFile, *pModule, * pFuncName, * pFunc;
+	PyObject* pOutput, * pArgs;
+
+	//Start Python Interpreter
+	Py_Initialize();
+	//These lines are needed such that the working directory (where the c++ code is) can be added, and PyImport can actually find the python file.
+	PyRun_SimpleString("import sys");
+	PyRun_SimpleString("import os");
+	PyRun_SimpleString("sys.path.append(os.getcwd())");
+
+	pFile = PyUnicode_DecodeFSDefault((char*)mPyfile.c_str());
+
+	if (pFile == NULL) {
+		throw std::runtime_error("Error in python import, could not translate file name");
+	}
+
+	pModule = PyImport_Import(pFile);
+	Py_DECREF(pFile);
+
+	if (pModule == NULL) {
+		throw std::runtime_error(std::format("Error in python import, could not load file, file name is : {}", mPyfile));
+	}
+
+	pFunc = PyObject_GetAttrString(pModule, (char*)"damageCalculation");
+
+	if (!pFunc || !PyCallable_Check(pFunc)) {
+		if (PyErr_Occurred()) {
+			PyErr_Print();
+		}
+		throw std::runtime_error("Could not call function");
+		Py_XDECREF(pFunc); 
+		Py_DECREF(pModule);
+	}
+
+	pArgs = PyTuple_New(1);
+	PyTuple_SetItem(pArgs, 0, PyUnicode_FromString("ABCD"));
+	pOutput = PyObject_CallObject(pFunc, pArgs);
+
+
+	auto outputSize = PyTuple_Size(pOutput);
 
 
 
-
+	//parse arguments
+	for (int i = 0; i < outputSize; ++i) {
+		PyObject* currItem = PyTuple_GetItem(pOutput, i);
+		PyObject* byteArr = PyUnicode_AsUTF8String(currItem);
+		std::string pOutputString = std::string(PyBytes_AsString(byteArr));
+		std::cout << pOutputString << std::endl;
+		
+	}
 
 }

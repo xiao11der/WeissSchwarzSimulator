@@ -15,6 +15,7 @@ struct deckReport {
 };
 enum peekPos { TOP, BOTTOM };
 enum postReport { WR, DECKSHUFFLE, TOPDECK, BOTDECK};
+enum stockWashMode {TOWR, TODECK};
 
 struct deckReportIn {
 	int x;
@@ -49,7 +50,10 @@ public:
 	//Player actions that directly correspond to game actions
 	bool takeDamage(int amount);
 	void takeUncanDamage(int amount);
+	void shuffleBackNonCX(int amount); //shuffle up to X non-climax cards back into the deck
+	void stockWash(stockWashMode mode);
 	bool burnDeck(int damage, bool canBeCanceled);
+	void blindStock(int amount);
 	void takeRefreshDamage(void);
 	void shuffleDeck(void);
 	void levelUp(void);
