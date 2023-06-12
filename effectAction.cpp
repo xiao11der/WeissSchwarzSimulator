@@ -107,13 +107,19 @@ void pythonBurn::performAction(weissPlayer& self, weissPlayer& opponent, std::de
 		std::pair<std::string, std::string> action = parseParam(pOutputString, ',');
 
 		if (!_stricmp(action.first.c_str(), "burn")) {
-			opponent.burnDeck(std::stoi(action.second), true);
+			if (!opponent.takeDamage(std::stoi(action.second))) { // if opponent cancels, perform on cancel action, but the on cancel sequence does not get passed onto it
+				std::deque<effectAction*> emptyCancel = std::deque<effectAction*>(); //I need an empty vector that signifies no action to be taken, there may be a better implementation
+				while (onCancel.size() > 0) {
+					onCancel.front()->performAction(self, opponent, emptyCancel);
+					onCancel.pop_front();
+				}
+			};
 		}
 		else if (!_stricmp(action.first.c_str(), "shuffle")) {
 			opponent.shuffleBackNonCX(std::stoi(action.second));
 		}
 		else if (!_stricmp(action.first.c_str(), "uncancellable")) {
-			opponent.burnDeck(std::stoi(action.second), false);
+			opponent.takeUncanDamage(std::stoi(action.second));
 		}
 		else {
 			throw std::invalid_argument(std::format("Unknown command from Python code:{}", action.first));
