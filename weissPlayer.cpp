@@ -119,7 +119,7 @@ deckReport weissPlayer::createReportXCards(int x, peekPos peekSide, postReport p
 			outStruct.levelDist[topCard.getLevel()]++;
 			outStruct.triggerDist[topCard.getTrigger()]++;
 			outStruct.colorDist[topCard.getColor()]++;
-			outStruct.raw.append(std::format("|c:{} l:{} t:{} s:{}", determineType(topCard), determineColor(topCard), topCard.getLevel(), topCard.getTrigger(), topCard.getSoul()));
+			outStruct.raw.append(std::format("|t:{} c:{} l:{} t:{} s:{}", determineType(topCard), determineColor(topCard), topCard.getLevel(), topCard.getTrigger(), topCard.getSoul()));
 			mPlayerResolution.mContent.push_back(topCard);
 			mPlayerDeck.mContent.pop_front();
 		}

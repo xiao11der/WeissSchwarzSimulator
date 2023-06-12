@@ -11,6 +11,21 @@ gameStruct parseFile(std::string inputFile) {
 	int lineCount = 0;
 
 
+	//Flags for multi-variable parts like python
+	// 
+	//Python import
+	bool fPython = false;
+	bool fileDone = false, amountDone = false, playerDone = false, peekSideDone = false, postActionDone = false;
+	deckReportIn dummy_struct;
+	std::string file = "";
+	reportTgt tgt;
+	postReport postReportAction;
+	peekPos pos;
+	int amount;
+
+	//TO-DO: Change game state initialization to flag-based checks too
+
+
 	while (std::getline(inFile, line)) {
 
 		lineCount++;
@@ -87,7 +102,7 @@ gameStruct parseFile(std::string inputFile) {
 
 		if (section == "CONFIG") {
 			//std::cout << "Parsing Config" << std::endl;
-			currentParam = parseParam(line);
+			currentParam = parseParam(line, '=');
 
 			if (!_stricmp(currentParam.first.c_str(), "max_iter")) { //strcmp returns 0 for equal strings
 					game.MAX_ITER = std::stoi(currentParam.second);
@@ -114,7 +129,7 @@ gameStruct parseFile(std::string inputFile) {
 
 		if (section == "SELF") {
 			//std::cout << "Parsing self state" << std::endl;
-			currentParam = parseParam(line);
+			currentParam = parseParam(line, '=');
 			if (!_stricmp(currentParam.first.c_str(), "game_state_type")) {
 				if (!_stricmp(currentParam.second.c_str(), "simple")) {
 					game.selfGameState = SIMPLE;
@@ -132,6 +147,12 @@ gameStruct parseFile(std::string inputFile) {
 			else if (!_stricmp(currentParam.first.c_str(), "no_of_cards_in_wr")) {
 				game.noOfCardsInWR = std::stoi(currentParam.second);
 			}
+			else if (!_stricmp(currentParam.first.c_str(), "no_of_cx_in_deck")) {
+				game.noOfCXInDeck = std::stoi(currentParam.second);
+			}
+			else if (!_stricmp(currentParam.first.c_str(), "no_of_cx_in_wr")) {
+				game.noOfCXInWR = std::stoi(currentParam.second);
+			}
 			else {
 				throw std::invalid_argument("Undefined argument in #SELF, what you entered is " + currentParam.first);
 			}
@@ -139,7 +160,7 @@ gameStruct parseFile(std::string inputFile) {
 
 		if (section == "OPPONENT") {
 			//std::cout << "Parsing opponent state" << std::endl;
-			currentParam = parseParam(line);
+			currentParam = parseParam(line, '=');
 			if (!_stricmp(currentParam.first.c_str(), "game_state_type")) {
 				if (!_stricmp(currentParam.second.c_str(), "simple")) {
 					game.selfGameState = SIMPLE;
@@ -237,6 +258,16 @@ gameStruct parseFile(std::string inputFile) {
 			}
 			if (line.rfind("*PYTHON", 0) == 0) {
 				swapEffectState("Python", currAttack);
+				if (fPython) {
+					throw std::runtime_error(std::format("Line{}: Python initialized but never finished, make sure all the parameters are set", lineCount));
+				}
+				//reset all flags
+				fPython = true;
+				fileDone = false;
+				amountDone = false;
+				playerDone = false;
+				peekSideDone = false;
+				postActionDone = false;
 				continue;
 			}
 			else if (line.rfind("*", 0) == 0 && line.rfind("**", 0) != 0) {
@@ -246,7 +277,7 @@ gameStruct parseFile(std::string inputFile) {
 			if (currAttack.effect == "BurnX") {
 				int amount = -999;
 
-				currentParam = parseParam(line);
+				currentParam = parseParam(line, '=');
 				if (!_stricmp(currentParam.first.c_str(), "amount")) {
 					amount = std::stoi(currentParam.second);
 				}
@@ -259,24 +290,82 @@ gameStruct parseFile(std::string inputFile) {
 			
 			if (currAttack.effect == "Python") {
 
-				deckReportIn dummy_struct;
-				dummy_struct.peekSide = TOP;
-				dummy_struct.postReportAction = DECKSHUFFLE;
-				dummy_struct.x = 5;
-
-				std::string file = "";
-				currentParam = parseParam(line);
+				currentParam = parseParam(line, '=');
+				
 				if (!_stricmp(currentParam.first.c_str(), "file")) {
 					file = currentParam.second;
+					fileDone = true;
 				}
-				currAttack.currArrayPointer->push_front(new pythonBurn(file, dummy_struct));
+				else if (!_stricmp(currentParam.first.c_str(), "amount")) {
+					amount = std::stoi(currentParam.second);
+					amountDone = true;
+				}
+				else if (!_stricmp(currentParam.first.c_str(), "player")) {
+					std::string peekReportTgt;
+					peekReportTgt = currentParam.second;
+					if (!_stricmp(peekReportTgt.c_str(), "self")) {
+						tgt = SELF;
+					}
+					else if (!_stricmp(peekReportTgt.c_str(), "opponent")) {
+						tgt = OPPONENT;
+					}
+					else {
+						throw std::invalid_argument(std::format("Wrong player for python read in, must be self or opponent, the parsed input:{}", peekReportTgt));
+					}
+					playerDone = true;
+				}
+				else if (!_stricmp(currentParam.first.c_str(), "post_check")) {
+					std::string postReportString;
+					postReportString = currentParam.second;
+					if (!_stricmp(postReportString.c_str(), "to_wr")) {
+						postReportAction = WR;
+					}
+					else if (!_stricmp(postReportString.c_str(), "to_top")) {
+						postReportAction = TOPDECK;
+					}
+					else if (!_stricmp(postReportString.c_str(), "to_bottom")) {
+						postReportAction = BOTDECK;
+					}
+					else if (!_stricmp(postReportString.c_str(), "return_and_shuffle")) {
+						postReportAction = DECKSHUFFLE;
+					}
+					else {
+						throw std::invalid_argument(std::format("Wrong post check action, must be to_wr, to_top, to_bottom, or return_and_shuffle, the parsed input:{}", postReportString));
+					}
+					peekSideDone = true;
+				}
+				else if (!_stricmp(currentParam.first.c_str(), "position")) {
+					std::string peekPosString;
+					peekPosString = currentParam.second;
+					if (!_stricmp(peekPosString.c_str(), "top")) {
+						pos = TOP;
+					}
+					else if (!_stricmp(peekPosString.c_str(), "bottom")) {
+						pos = BOTTOM;
+					}
+					else {
+						throw std::invalid_argument(std::format("Wrong peek position for python read in, must be top or bottom, the parsed input:{}", peekPosString));
+					}
+					postActionDone = true;
+				}
+				else {
+					throw std::invalid_argument(std::format("Line{}: Wrong argument for python.", lineCount));
+				}
+
+				if (fileDone && amountDone && playerDone && peekSideDone && postActionDone) {
+					dummy_struct.peekSide = pos;
+					dummy_struct.postReportAction = postReportAction;
+					dummy_struct.x = amount;
+					currAttack.currArrayPointer->push_front(new pythonBurn(file, dummy_struct, tgt));
+					fPython = false;
+				}
 
 
 			}
 
 			//Base attack parameters not including effects
 			if (currAttack.effect == "NONE" && currAttack.step == "NONE") { //If its not currently parsing an attack step or an effect
-				currentParam = parseParam(line);
+				currentParam = parseParam(line, '=');
 				if (!_stricmp(currentParam.first.c_str(), "soul")) { //strcmp returns 0 for equal strings
 					currAttack.soul = std::stoi(currentParam.second);
 				}
@@ -293,40 +382,6 @@ gameStruct parseFile(std::string inputFile) {
 	}
 
 	return game;
-
-}
-
-//Parses the parameter seperated by "=" in a given line, return as a pair of variable name and value
-std::pair<std::string, std::string> parseParam(std::string line) {
-	std::string name;
-	std::string value;
-
-	size_t pos = line.find("=");
-	if (pos == std::string::npos) {
-		throw std::runtime_error("Tried to parse a line, it did not contain an equal sign");
-	}
-	name = line.substr(0, pos);
-	trim(name);
-	value = line.substr(pos + 1, line.length());
-	trim(value);
-	
-	return std::make_pair(name, value);
-
-}
-
-void trim(std::string& line) {
-	line.erase(0, line.find_first_not_of(" \t\n\r\f\v")); //trim leading white spaces
-
-	int lastNoneSpace = 0;
-
-	for (int i = static_cast<int>(line.length() - 1); i >= 0; --i) { //use int because we want to iterate from the back of the line to the front, and terminate loop when cursor reaches front.
-		if (!(line[i] == ' ' || line[i] == '\t' || line[i] == '\n' || line[i] == '\r' || line[i] == '\f' || line[i] == '\v')) {
-			lastNoneSpace = i+1;
-			break;
-		}
-	}
-
-	line.erase(line.begin() + lastNoneSpace, line.end());
 
 }
 

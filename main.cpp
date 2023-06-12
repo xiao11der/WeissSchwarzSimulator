@@ -28,6 +28,11 @@ int main(void) {
 	int noOfCardsInOppWR;
 	int noOfCxInOppWR;
 	int tempAttackValue;
+	int noOfCardsInDeck;
+	int noOfTriggersInDeck;
+	int noOfCardsInWR;
+	int noOfCXInDeck;
+	int noOfCxInWR;
 	int MAX_ITER;
 	std::vector<int> inputAttackSequence;
 	std::vector<damageAction> damageSequence;
@@ -43,6 +48,12 @@ int main(void) {
 		noOfCardsInOppWR = currGame.noOfCardsInOppWR;
 		noOfCxInOppWR = currGame.noOfCxInOppWR;
 		damageSequence = currGame.damageSequence;
+		noOfCardsInDeck = currGame.noOfCardsInDeck;
+		noOfTriggersInDeck = currGame.noOfTriggersInDeck;
+		noOfCardsInWR = currGame.noOfCardsInWR;
+		noOfCXInDeck = currGame.noOfCXInDeck;
+		noOfCardsInWR = currGame.noOfCardsInWR;
+		noOfCxInWR = currGame.noOfCXInWR;
 		MAX_ITER = currGame.MAX_ITER;
 		std::cout << "Read Complete" << std::endl;
 
@@ -124,7 +135,7 @@ int main(void) {
 
 		std::map<int, int> damageChart; //Initialize damage chart for output
 		weissSimulation weissTest; //Initialize Simulation
-		weissPlayer selfInit(weissDeck(10, 3));//Initialize self deck state
+		weissPlayer selfInit(weissDeck(noOfCardsInDeck, noOfCXInDeck), weissDeck(noOfCardsInWR, noOfCxInWR));//Initialize self deck state
 		weissPlayer opponentInit(weissDeck(noOfCardsInOppDeck, noOfCxInOppDeck), weissDeck(noOfCardsInOppWR, noOfCxInOppWR)); //Initialize  opponent deck state and WR state
 
 

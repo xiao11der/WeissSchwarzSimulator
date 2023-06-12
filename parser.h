@@ -8,7 +8,7 @@
 #include<vector>
 #include"damageAction.h"
 #include"effectAction.h"
-
+#include "common.h"
 
 #define SIMPLE 0
 
@@ -18,15 +18,17 @@ struct gameStruct {
 
 
 	int selfGameState = -1;
-	int noOfCardsInDeck = 0;
-	int noOfTriggersInDeck = 0;
-	int noOfCardsInWR = 0;
+	int noOfCardsInDeck = -1;
+	int noOfTriggersInDeck = -1;
+	int noOfCardsInWR = -1;
+	int noOfCXInDeck = -1;
+	int noOfCXInWR = -1;
 
 	int oppGameState = -1;
-	int noOfCardsInOppDeck=0;
-	int noOfCxInOppDeck=0;
-	int noOfCardsInOppWR=0;
-	int noOfCxInOppWR =0;
+	int noOfCardsInOppDeck=-1;
+	int noOfCxInOppDeck=-1;
+	int noOfCardsInOppWR=-1;
+	int noOfCxInOppWR =-1;
 
 	std::vector<damageAction> damageSequence;
 	
@@ -52,5 +54,3 @@ struct attackStruct {
 gameStruct parseFile(std::string inputFile);
 
 void swapEffectState(std::string state_name, attackStruct& currAttack);
-std::pair<std::string, std::string> parseParam(std::string line);
-void trim(std::string& line);

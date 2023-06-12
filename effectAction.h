@@ -8,7 +8,11 @@
 #include <map>
 #include "weissPlayer.h"
 #include "Python.h"
+#include"common.h"
 #include<iostream>
+
+
+enum reportTgt{SELF, OPPONENT};
 
 class effectAction {
 
@@ -38,7 +42,7 @@ class pythonBurn : public effectAction {
 
 public:
 
-	pythonBurn(std::string pyFile, deckReportIn reportInstructions);
+	pythonBurn(std::string pyFile, deckReportIn reportInstructions, reportTgt tgt);
 
 	void performAction(weissPlayer& self, weissPlayer& opponent, std::deque<effectAction*>& onCancel);
 
@@ -46,4 +50,5 @@ private:
 	std::string mPyfile;
 	deckReportIn mReportInstructions;
 	deckReport mReportResult;
+	reportTgt mTgt;
 };

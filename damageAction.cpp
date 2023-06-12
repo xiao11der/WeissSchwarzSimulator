@@ -51,6 +51,11 @@ int damageAction::performDamageAction(weissPlayer& self, weissPlayer& opponent) 
 
 	};
 
+	while (mPostAttackAction.size() > 0) { //resolve all preattack queue
+		mPostAttackAction.front()->performAction(self, opponent, mOnCancelAction);
+		mPostAttackAction.pop_front();
+	}
+
 	int finalDamage= opponent.getLevel().getNoOfCards() * 7 + opponent.getClock().getNoOfCards(); //final opponent damage
 
 	//Reset self soul if trigger action was used

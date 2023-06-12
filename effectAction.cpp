@@ -18,7 +18,7 @@ void burnX::performAction(weissPlayer& self, weissPlayer& opponent, std::deque<e
 }
 
 
-pythonBurn::pythonBurn(std::string pyFile, deckReportIn reportInstructions) : mPyfile(pyFile), mReportInstructions(reportInstructions) {
+pythonBurn::pythonBurn(std::string pyFile, deckReportIn reportInstructions, reportTgt tgt) : mPyfile(pyFile), mReportInstructions(reportInstructions), mTgt(tgt) {
 
 }
 
@@ -45,6 +45,19 @@ void pythonBurn::performAction(weissPlayer& self, weissPlayer& opponent, std::de
 	//
 	// ------------------------------------------------------Scrap Paper Section----------------------------------------------//
 
+
+	switch (mTgt) {
+	case SELF:
+		mReportResult = self.createReportXCards(mReportInstructions.x, mReportInstructions.peekSide, mReportInstructions.postReportAction);
+		break;
+	case OPPONENT:
+		mReportResult = opponent.createReportXCards(mReportInstructions.x, mReportInstructions.peekSide, mReportInstructions.postReportAction);
+		break;
+	default:
+		throw std::invalid_argument("Wrong target to generate deck report, must be SELF or OPPONENT");
+	}
+
+
 	PyObject *pFile, *pModule, * pFuncName, * pFunc;
 	PyObject* pOutput, * pArgs;
 
@@ -53,7 +66,7 @@ void pythonBurn::performAction(weissPlayer& self, weissPlayer& opponent, std::de
 	//These lines are needed such that the working directory (where the c++ code is) can be added, and PyImport can actually find the python file.
 	PyRun_SimpleString("import sys");
 	PyRun_SimpleString("import os");
-	PyRun_SimpleString("sys.path.append(os.getcwd())");
+	PyRun_SimpleString("sys.path.append(os.getcwd() + './Effects')");
 
 	pFile = PyUnicode_DecodeFSDefault((char*)mPyfile.c_str());
 
@@ -62,7 +75,6 @@ void pythonBurn::performAction(weissPlayer& self, weissPlayer& opponent, std::de
 	}
 
 	pModule = PyImport_Import(pFile);
-	Py_DECREF(pFile);
 
 	if (pModule == NULL) {
 		throw std::runtime_error(std::format("Error in python import, could not load file, file name is : {}", mPyfile));
@@ -75,12 +87,11 @@ void pythonBurn::performAction(weissPlayer& self, weissPlayer& opponent, std::de
 			PyErr_Print();
 		}
 		throw std::runtime_error("Could not call function");
-		Py_XDECREF(pFunc); 
-		Py_DECREF(pModule);
+
 	}
 
 	pArgs = PyTuple_New(1);
-	PyTuple_SetItem(pArgs, 0, PyUnicode_FromString("ABCD"));
+	PyTuple_SetItem(pArgs, 0, PyUnicode_FromString(mReportResult.raw.c_str()));
 	pOutput = PyObject_CallObject(pFunc, pArgs);
 
 
@@ -93,8 +104,29 @@ void pythonBurn::performAction(weissPlayer& self, weissPlayer& opponent, std::de
 		PyObject* currItem = PyTuple_GetItem(pOutput, i);
 		PyObject* byteArr = PyUnicode_AsUTF8String(currItem);
 		std::string pOutputString = std::string(PyBytes_AsString(byteArr));
-		std::cout << pOutputString << std::endl;
-		
+		std::pair<std::string, std::string> action = parseParam(pOutputString, ',');
+
+		if (!_stricmp(action.first.c_str(), "burn")) {
+			opponent.burnDeck(std::stoi(action.second), true);
+		}
+		else if (!_stricmp(action.first.c_str(), "shuffle")) {
+			opponent.shuffleBackNonCX(std::stoi(action.second));
+		}
+		else if (!_stricmp(action.first.c_str(), "uncancellable")) {
+			opponent.burnDeck(std::stoi(action.second), false);
+		}
+		else {
+			throw std::invalid_argument(std::format("Unknown command from Python code:{}", action.first));
+		}
+
 	}
 
+
+
+	Py_XDECREF(pFile);
+	Py_XDECREF(pFunc);
+	Py_XDECREF(pModule);
+	if (Py_FinalizeEx() < 0) {
+		throw std::runtime_error("Python failed to exit");
+	}
 }
