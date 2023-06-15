@@ -51,4 +51,6 @@ private:
 	deckReportIn mReportInstructions;
 	deckReport mReportResult;
 	reportTgt mTgt;
+	PyObject* mPFunc;
+	PyObject* mPArg;
 };

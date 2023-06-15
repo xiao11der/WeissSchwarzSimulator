@@ -20,6 +20,56 @@ void burnX::performAction(weissPlayer& self, weissPlayer& opponent, std::deque<e
 
 pythonBurn::pythonBurn(std::string pyFile, deckReportIn reportInstructions, reportTgt tgt) : mPyfile(pyFile), mReportInstructions(reportInstructions), mTgt(tgt) {
 
+
+	//Start Python Interpreter
+	Py_Initialize();
+
+	PyRun_SimpleString("import sys");
+	PyRun_SimpleString("import os");
+	PyRun_SimpleString("sys.path.append(os.getcwd() + './Effects')");
+
+
+	PyObject* pFile, * pModule, * pFuncName;
+
+	mPArg = PyTuple_New(1);
+
+	pFile = PyUnicode_DecodeFSDefault((char*)mPyfile.c_str());
+
+	if (pFile == NULL) {
+		throw std::runtime_error("Error in python import, could not translate file name");
+	}
+	
+
+	pModule = PyImport_Import(pFile);
+	Py_XDECREF(pFile);
+
+	if (pModule == NULL) {
+		throw std::runtime_error(std::format("Error in python import, could not load file, file name is : {}", mPyfile));
+	}
+
+	mPFunc = PyObject_GetAttrString(pModule, (char*)"damageCalculation");
+	Py_XDECREF(pModule);
+
+	if (!mPFunc || !PyCallable_Check(mPFunc)) {
+		if (PyErr_Occurred()) {
+			PyErr_Print();
+		}
+		throw std::runtime_error("Function not found or not callable");
+
+	}
+
+	
+
+
+	if (Py_FinalizeEx() < 0) {
+		throw std::runtime_error("Python failed to exit");
+	}
+	
+	
+
+
+
+
 }
 
 void pythonBurn::performAction(weissPlayer& self, weissPlayer& opponent, std::deque<effectAction*>& onCancel) {
@@ -57,42 +107,12 @@ void pythonBurn::performAction(weissPlayer& self, weissPlayer& opponent, std::de
 		throw std::invalid_argument("Wrong target to generate deck report, must be SELF or OPPONENT");
 	}
 
-
-	PyObject *pFile, *pModule, * pFuncName, * pFunc;
-	PyObject* pOutput, * pArgs;
-
 	//Start Python Interpreter
 	Py_Initialize();
-	//These lines are needed such that the working directory (where the c++ code is) can be added, and PyImport can actually find the python file.
-	PyRun_SimpleString("import sys");
-	PyRun_SimpleString("import os");
-	PyRun_SimpleString("sys.path.append(os.getcwd() + './Effects')");
 
-	pFile = PyUnicode_DecodeFSDefault((char*)mPyfile.c_str());
-
-	if (pFile == NULL) {
-		throw std::runtime_error("Error in python import, could not translate file name");
-	}
-
-	pModule = PyImport_Import(pFile);
-
-	if (pModule == NULL) {
-		throw std::runtime_error(std::format("Error in python import, could not load file, file name is : {}", mPyfile));
-	}
-
-	pFunc = PyObject_GetAttrString(pModule, (char*)"damageCalculation");
-
-	if (!pFunc || !PyCallable_Check(pFunc)) {
-		if (PyErr_Occurred()) {
-			PyErr_Print();
-		}
-		throw std::runtime_error("Could not call function");
-
-	}
-
-	pArgs = PyTuple_New(1);
-	PyTuple_SetItem(pArgs, 0, PyUnicode_FromString(mReportResult.raw.c_str()));
-	pOutput = PyObject_CallObject(pFunc, pArgs);
+	PyObject* pOutput;
+	PyTuple_SetItem(mPArg, 0, PyUnicode_FromString(mReportResult.raw.c_str()));
+	pOutput = PyObject_CallObject(mPFunc, mPArg);
 
 
 	auto outputSize = PyTuple_Size(pOutput);
@@ -126,12 +146,6 @@ void pythonBurn::performAction(weissPlayer& self, weissPlayer& opponent, std::de
 		}
 
 	}
-
-
-
-	Py_XDECREF(pFile);
-	Py_XDECREF(pFunc);
-	Py_XDECREF(pModule);
 	if (Py_FinalizeEx() < 0) {
 		throw std::runtime_error("Python failed to exit");
 	}
