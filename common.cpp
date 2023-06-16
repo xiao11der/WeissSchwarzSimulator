@@ -1,7 +1,7 @@
 #include "common.h"
 
 
-//Parses the parameter seperated by "=" in a given line, return as a pair of variable name and value
+//Parses the parameter seperated by a delimiter delim in a given line, return as a pair of variable name and value
 std::pair<std::string, std::string> parseParam(std::string line, char delim) {
 	std::string name;
 	std::string value;

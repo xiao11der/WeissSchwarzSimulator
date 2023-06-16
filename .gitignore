@@ -1,3 +1,6 @@
 x64
 README.md
 .vs
+/TestInputFile_AvatarNoSupport.txt
+/TestInputFile_Silica.txt
+/Results.csv

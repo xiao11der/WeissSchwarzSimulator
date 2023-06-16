@@ -1,4 +1,5 @@
 #include <iostream>
+#include<fstream>
 #include <cstdio>
 #include<string>
 #include "cards.h"
@@ -122,6 +123,11 @@ int main(void) {
 
 	//-------------------------USER INPUT-------------------------//
 	
+	//Set up output file
+	std::ofstream results;
+	results.open("Results.csv");
+	results << "Damage" <<','<< "Hit Rate" << std::endl;
+
 	auto start = std::chrono::high_resolution_clock::now();//timing start
 
 	
@@ -135,7 +141,8 @@ int main(void) {
 
 		std::map<int, int> damageChart; //Initialize damage chart for output
 		weissSimulation weissTest; //Initialize Simulation
-		weissPlayer selfInit(weissDeck(noOfCardsInDeck, noOfCXInDeck), weissDeck(noOfCardsInWR, noOfCxInWR));//Initialize self deck state
+		//weissPlayer selfInit(weissDeck(noOfCardsInDeck, noOfCXInDeck), weissDeck(noOfCardsInWR, noOfCxInWR));//Initialize self deck state
+		weissPlayer selfInit(weissDeck(std::string("TestDeck.txt")), weissDeck(0, 0));
 		weissPlayer opponentInit(weissDeck(noOfCardsInOppDeck, noOfCxInOppDeck), weissDeck(noOfCardsInOppWR, noOfCxInOppWR)); //Initialize  opponent deck state and WR state
 
 
@@ -190,6 +197,8 @@ int main(void) {
 			double hitRate = 100 * hitCount / MAX_ITER;
 			std::cout.precision(4);
 			std::cout << "Damage: " << damage << "  " << "Chance :" << hitRate << "%" << std::endl;//output damage distribution
+			//Output to csv
+			results << damage <<',' << hitRate << std::endl;
 
 		}
 	}

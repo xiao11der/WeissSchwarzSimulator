@@ -53,7 +53,7 @@ weissPlayer::weissPlayer(weissDeck deckState, weissDeck waitingRoomState, weissD
 	mAddSoul = 0; //No additional souls until trigger check
 }
 
-weissPlayer::weissPlayer(weissPlayer& p1)
+weissPlayer::weissPlayer(const weissPlayer& p1)
 
 {
 	mPlayerDeck = p1.mPlayerDeck;
@@ -319,7 +319,7 @@ bool weissPlayer::burnDeck(int damage, bool canBeCanceled) { //Subfunction to ta
 void weissPlayer::levelUp(void) {
 
 	for (auto i = mPlayerClock.mContent.begin(); i <= mPlayerClock.mContent.begin()+6; ++i) { //Iterate the first 7 cards of the clock, find card to level up, level up the first non-cx
-		card topClock = mPlayerClock.mContent.front(); 
+		card topClock = *i; //iterate through deque
 		if (topClock.getType() != CLIMAX) {
 			mPlayerLevel.mContent.push_back(topClock);
 			mPlayerClock.mContent.pop_front();
@@ -330,6 +330,7 @@ void weissPlayer::levelUp(void) {
 		if (i == mPlayerClock.mContent.begin() + 5) { //If the entire clock is cx, just level a cx
 			mPlayerLevel.mContent.push_back(topClock);
 			mPlayerClock.mContent.pop_front();
+			break;
 			//std::cout << "all clock is cx" << std::endl;
 		}
 

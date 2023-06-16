@@ -38,7 +38,7 @@ public:
 		weissDeck stockState,
 		weissDeck memoryState); //Ctor with full specificity
 
-	weissPlayer(weissPlayer& p1); //Copy ctor
+	weissPlayer(const weissPlayer& p1); //Copy ctor
 	void combine(weissDeck& deckSource, weissDeck& deckDest);
 
 

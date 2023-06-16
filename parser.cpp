@@ -256,7 +256,7 @@ gameStruct parseFile(std::string inputFile) {
 				swapEffectState("BurnX", currAttack);
 				continue;
 			}
-			if (line.rfind("*PYTHON", 0) == 0) {
+			else if (line.rfind("*PYTHON", 0) == 0) {
 				swapEffectState("Python", currAttack);
 				if (fPython) {
 					throw std::runtime_error(std::format("Line{}: Python initialized but never finished, make sure all the parameters are set", lineCount));
@@ -268,6 +268,15 @@ gameStruct parseFile(std::string inputFile) {
 				playerDone = false;
 				peekSideDone = false;
 				postActionDone = false;
+				continue;
+			}
+			else if (line.rfind("*AVATAR", 0) == 0) {
+				swapEffectState("Avatar", currAttack);
+				continue;
+			}
+			else if (line.rfind("*SILICA", 0) == 0) {
+				swapEffectState("Silica", currAttack);
+				currAttack.currArrayPointer->push_front(new silicaBurn());
 				continue;
 			}
 			else if (line.rfind("*", 0) == 0 && line.rfind("**", 0) != 0) {
@@ -287,7 +296,31 @@ gameStruct parseFile(std::string inputFile) {
 
 				}
 			}
-			
+
+			if (currAttack.effect == "Avatar") {
+				bool supp = false;
+				currentParam = parseParam(line, '=');
+				if (!_stricmp(currentParam.first.c_str(), "support")) {
+					if (!_stricmp(currentParam.second.c_str(), "true")) {
+						supp = true;
+					}
+					else if (!_stricmp(currentParam.second.c_str(), "false")) {
+						supp = false;
+					}
+					else {
+						throw std::invalid_argument("Wrong avatar support selection, must be TRUE or FALSE");
+					}
+
+					currAttack.currArrayPointer->push_front(new avatarBurn(supp));
+					
+				}
+
+			}
+
+			if (currAttack.effect == "Silica") {
+				throw std::runtime_error("This should not have been reached");
+			}
+
 			if (currAttack.effect == "Python") {
 
 				currentParam = parseParam(line, '=');

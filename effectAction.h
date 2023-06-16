@@ -38,6 +38,22 @@ private:
 
 
 
+class avatarBurn : public effectAction {
+public:
+	avatarBurn(bool supp);
+	void performAction(weissPlayer& self, weissPlayer& opponent, std::deque<effectAction*>& onCancel);
+
+private:
+	bool mSupp = false;
+};
+
+
+class silicaBurn : public effectAction {
+public:
+	silicaBurn();
+	void performAction(weissPlayer& self, weissPlayer& opponent, std::deque<effectAction*>& onCancel);
+};
+
 class pythonBurn : public effectAction {
 
 public:

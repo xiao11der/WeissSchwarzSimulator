@@ -11,7 +11,7 @@ class weissDeck {
 	
 public:
 	weissDeck(int noOfCards=50, int noOfCx=8); //simple ctor with cards number and cx number only
-	weissDeck(struct distribution); //ctor with specific distribution of cards
+	weissDeck(std::string file); //import deck from text file
 	weissDeck(const weissDeck& p1); //copy ctor
 
 

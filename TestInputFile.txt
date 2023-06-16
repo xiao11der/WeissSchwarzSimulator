@@ -5,7 +5,7 @@
 // ## marks the end of a section
 // % Marks the beginning of attack action step, make sure it is "OnAttack", "OnCancel", or "PostAttack", this must be embedded in attack sections
 // %% marks the end of an attack action step
-// * marks the beginning of an effect, currently supports "BurnX"
+// * marks the beginning of an effect, currently supports "BURNX", "PYTHON", "AVATAR, "SILICA"
 // ** marks the end of an effect
 
 //Python Notes
@@ -20,7 +20,7 @@
 
 //CONFIG
 #CONFIG
-MAX_ITER = 1000
+MAX_ITER = 10000
 TRIGGER = TRUE
 ##
 
@@ -44,24 +44,60 @@ NO_OF_CX_IN_WR = 0
 ##
 
 //ATTACK SEQUENCE
+
+
 #ATTACK
 
 SOUL = 3
 
 %OnAttack
 
-*PYTHON
-FILE = Test
-PLAYER = OPPONENT
-AMOUNT = 5
+//*PYTHON
+//FILE = Test
+//PLAYER = OPPONENT
+//AMOUNT = 5
 
-POSITION = TOP
-POST_CHECK = TO_TOP
+//POSITION = TOP
+//POST_CHECK = TO_TOP
+//**
+
+*AVATAR
+SUPPORT = TRUE
 **
 
 %%
 
 ##
+
+#ATTACK
+
+SOUL = 3
+
+%OnAttack
+
+*AVATAR
+SUPPORT = TRUE
+**
+
+%%
+
+##
+
+#ATTACK
+
+SOUL = 3
+
+%OnAttack
+
+*AVATAR
+SUPPORT = TRUE
+**
+
+%%
+
+##
+
+
 
 
 

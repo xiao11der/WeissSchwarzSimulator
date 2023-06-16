@@ -17,6 +17,68 @@ void burnX::performAction(weissPlayer& self, weissPlayer& opponent, std::deque<e
 
 }
 
+avatarBurn::avatarBurn(bool supp) : mSupp(supp) {
+
+}
+
+void avatarBurn::performAction(weissPlayer& self, weissPlayer& opponent, std::deque<effectAction*>& onCancel) {
+	int cardsToCheck = 4;
+	
+	if (mSupp) {
+		cardsToCheck = 5;
+	}
+
+	deckReport report = self.createReportXCards(cardsToCheck, TOP, WR);
+
+	int totalColor = 0;
+
+	if (report.colorDist[BLUE] > 0) {
+		totalColor++;
+	}
+	if (report.colorDist[RED] > 0) {
+		totalColor++;
+	}
+	if (report.colorDist[GREEN] > 0) {
+		totalColor++;
+	}
+	if (report.colorDist[YELLOW] > 0) {
+		totalColor++;
+	}
+
+	if (totalColor >= 2) {
+		opponent.shuffleBackNonCX(2);
+	}
+
+	if (totalColor >= 3) {
+		if (!opponent.takeDamage(3)) { // if opponent cancels, perform on cancel action, but the on cancel sequence does not get passed onto it
+			std::deque<effectAction*> emptyCancel = std::deque<effectAction*>(); //I need an empty vector that signifies no action to be taken, there may be a better implementation
+			while (onCancel.size() > 0) {
+				onCancel.front()->performAction(self, opponent, emptyCancel);
+				onCancel.pop_front();
+			}
+		};
+	}
+
+	if (totalColor >= 4) {
+		opponent.takeUncanDamage(1);
+	}
+}
+
+silicaBurn::silicaBurn() {
+
+}
+
+void silicaBurn::performAction(weissPlayer& self, weissPlayer& opponent, std::deque<effectAction*>& onCancel) {
+	if (!opponent.takeDamage(2)) { // if opponent cancels, perform on cancel action, but the on cancel sequence does not get passed onto it
+		std::deque<effectAction*> emptyCancel = std::deque<effectAction*>(); //I need an empty vector that signifies no action to be taken, there may be a better implementation
+		while (onCancel.size() > 0) {
+			onCancel.front()->performAction(self, opponent, emptyCancel);
+			onCancel.pop_front();
+		}
+	};
+	opponent.shuffleBackNonCX(2);
+}
+
 
 pythonBurn::pythonBurn(std::string pyFile, deckReportIn reportInstructions, reportTgt tgt) : mPyfile(pyFile), mReportInstructions(reportInstructions), mTgt(tgt) {
 
@@ -58,17 +120,9 @@ pythonBurn::pythonBurn(std::string pyFile, deckReportIn reportInstructions, repo
 
 	}
 
-	
-
-
 	if (Py_FinalizeEx() < 0) {
 		throw std::runtime_error("Python failed to exit");
 	}
-	
-	
-
-
-
 
 }
 
